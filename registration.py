@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog
 from zxcvbn import zxcvbn
 
 class Ui_Registration(object):
@@ -122,6 +123,10 @@ class Ui_Registration(object):
         # Each key press on password field will call function.
         self.password_edit.textChanged.connect(lambda: self.update_password_bits())
 
+        # Browse for folder path to save password database file in.
+        self.directory_browse_button.clicked.connect(lambda: self.browse_dir())
+        self.directory_edit.setReadOnly(True)
+
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
 
@@ -144,6 +149,11 @@ class Ui_Registration(object):
             print(result["guesses_log10"])
         else:
             pass
+
+    def browse_dir(self):
+        dir_path = QtWidgets.QFileDialog.getExistingDirectory()
+        self.directory_edit.setText(dir_path)
+        print(dir_path)
 
     def retranslateUi(self, Registration):
         _translate = QtCore.QCoreApplication.translate

@@ -51,6 +51,9 @@ class DataEntry(QWidget):
             con.commit()
             cursor.execute("INSERT INTO info VALUES(?,?,?,?,?)", (a, b, c, d, e))
             con.commit()
+        finally:
+            pass
+
 
 class MainWindow(QMainWindow):
     def __init__(self, w):
@@ -66,13 +69,3 @@ if __name__ == '__main__':
     demo = MainWindow(w)
     demo.show()
     sys.exit(app.exec_())
-
-
-
-
-
-
-
-
-
-

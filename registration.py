@@ -126,8 +126,24 @@ class Ui_Registration(object):
         self.secret_button.hide()
         self.secret_help_button.hide()
 
+        # Cancel button clicked will close the program.
+        self.cancel_button.clicked.connect(QtWidgets.QApplication.instance().quit)
+
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
+
+
+    def ExpertBox_clicked(self):
+        if self.expert_checkBox.isChecked() == False:
+            self.secret_label.hide()
+            self.secret_edit.hide()
+            self.secret_button.hide()
+            self.secret_help_button.hide()
+        else:
+            self.secret_label.show()
+            self.secret_edit.show()
+            self.secret_button.show()
+            self.secret_help_button.show()
 
     def retranslateUi(self, Registration):
         _translate = QtCore.QCoreApplication.translate
@@ -146,18 +162,6 @@ class Ui_Registration(object):
         self.secret_help_button.setText(_translate("Registration", "?"))
         self.cancel_button.setText(_translate("Registration", "Cancel"))
         self.ok_button.setText(_translate("Registration", "OK"))
-
-    def ExpertBox_clicked(self):
-        if self.expert_checkBox.isChecked() == False:
-            self.secret_label.hide()
-            self.secret_edit.hide()
-            self.secret_button.hide()
-            self.secret_help_button.hide()
-        else:
-            self.secret_label.show()
-            self.secret_edit.show()
-            self.secret_button.show()
-            self.secret_help_button.show()
 
 
 if __name__ == "__main__":

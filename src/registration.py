@@ -2,6 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from zxcvbn import zxcvbn
 import math
+import hashlib
+
 
 class Ui_Registration(object):
     def setupUi(self, Registration):
@@ -138,38 +140,72 @@ class Ui_Registration(object):
         self.secret_button.clicked.connect(lambda: self.browse_file())
         self.secret_edit.setReadOnly(True)
 
+        # Ok button clicked; create database from provided fields.
+        self.ok_button.clicked.connect(lambda: self.registration())
+
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
 
     def expert_box_clicked(self):
-        if self.expert_checkBox.isChecked() == False:
-            self.secret_label.hide()
-            self.secret_edit.hide()
-            self.secret_button.hide()
-            self.secret_help_button.hide()
-        else:
+        if self.expert_checkBox.isChecked():
             self.secret_label.show()
             self.secret_edit.show()
             self.secret_button.show()
             self.secret_help_button.show()
+        else:
+            self.secret_label.hide()
+            self.secret_edit.hide()
+            self.secret_button.hide()
+            self.secret_help_button.hide()
 
     def update_password_bits(self):
         # Entropy is calculated when text field is not empty.
         if self.password_edit.text():
             result = zxcvbn(self.password_edit.text())
-            print(math.log2(result["guesses"]).__floor__())
-            self.strength_progress_bar.setValue(math.log2(result["guesses"]).__floor__())
+            self.password_bits_value = math.log2(result["guesses"]).__floor__()
+            self.strength_progress_bar.setValue(self.password_bits_value)
         else:
             pass
 
     def browse_dir(self):
-        dir_path = QtWidgets.QFileDialog.getExistingDirectory()
-        self.directory_edit.setText(dir_path)
-        print(dir_path)
+        self.dir_path = QtWidgets.QFileDialog.getExistingDirectory()
+        self.directory_edit.setText(self.dir_path)
 
     def browse_file(self):
-        file_path = QtWidgets.QFileDialog.getOpenFileName()
-        self.secret_edit.setText(file_path[0])
+        self.file_path = QtWidgets.QFileDialog.getOpenFileName()
+        self.secret_edit.setText(self.file_path[0])
+
+    def registration(self):
+        # Function checks if fields are entered.
+        # True = All needed fields are non-blank.
+        # False = One or more fields are blank.
+        fields_filled = self.check_fields()
+
+        if not fields_filled:
+            print("Fields are non-blank.")
+            if self.password_bits_value < 100:
+                print("small")
+
+    def check_fields(self):
+        error = 0
+
+        if self.directory_edit.text() == '':
+            print("Directory is blank")
+            error = 1
+
+        if self.password_edit.text() == '':
+            print("Password is blank")
+            error = 1
+
+        if self.expert_checkBox.isChecked():
+            if self.secret_edit.text() == '':
+                print("Secret file not set")
+                error = 1
+
+        if error == 1:
+            return True
+        else:
+            return False
 
     def retranslateUi(self, Registration):
         _translate = QtCore.QCoreApplication.translate

@@ -2,10 +2,23 @@ import sqlite3
 from sqlite3 import Error
 from zxcvbn import zxcvbn
 import math
+import hashlib
 
-results = zxcvbn('JohnSmith123')
+path = '/home/rex/git'
 
-print(math.log2(results["guesses"]))
+# Read & binary mode
+with open(path, 'rb') as opened_file:
+    content = opened_file.read()
+    sha512 = hashlib.sha512()
+    sha512.update(content)
+    print('SHA512:{}'.format(sha512.hexdigest()))
+    opened_file.close()
+
+
+
+# results = zxcvbn('JohnSmith123')
+#
+# print(math.log2(results["guesses"]))
 
 
 # try:

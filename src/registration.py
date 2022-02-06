@@ -134,6 +134,10 @@ class Ui_Registration(object):
         # Set range for progress bar.
         self.strength_progress_bar.setRange(0, 1000)
 
+        # Browse for file path.
+        self.secret_button.clicked.connect(lambda: self.browse_file())
+        self.secret_edit.setReadOnly(True)
+
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
 
@@ -162,6 +166,10 @@ class Ui_Registration(object):
         dir_path = QtWidgets.QFileDialog.getExistingDirectory()
         self.directory_edit.setText(dir_path)
         print(dir_path)
+
+    def browse_file(self):
+        file_path = QtWidgets.QFileDialog.getOpenFileName()
+        self.secret_edit.setText(file_path[0])
 
     def retranslateUi(self, Registration):
         _translate = QtCore.QCoreApplication.translate

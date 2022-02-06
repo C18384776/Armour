@@ -186,6 +186,10 @@ class Ui_Registration(object):
             # Show a warning if given password that is deemed weak.
             if self.password_bits_value < 100:
                 self.password_warning()
+                # If users password was weak and they decided to change it from the warning.
+                if self.password_dialog_response == "No":
+                    return 1
+                # Creating sql connection code goes here.
 
     def check_fields(self):
         error = 0
@@ -227,7 +231,9 @@ class Ui_Registration(object):
         x = message.exec_()
 
     def password_warning_response(self, response):
-        print(response.text())
+        self.password_dialog_response = response.text()
+        self.password_dialog_response = self.password_dialog_response.strip('&')
+
 
     def retranslateUi(self, Registration):
         _translate = QtCore.QCoreApplication.translate

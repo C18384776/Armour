@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from zxcvbn import zxcvbn
+import math
 
 class Ui_Registration(object):
     def setupUi(self, Registration):
@@ -61,7 +62,7 @@ class Ui_Registration(object):
         self.strength_progress_bar = QtWidgets.QProgressBar(Registration)
         self.strength_progress_bar.setMinimumSize(QtCore.QSize(253, 25))
         self.strength_progress_bar.setMaximumSize(QtCore.QSize(253, 25))
-        self.strength_progress_bar.setProperty("value", 24)
+        self.strength_progress_bar.setProperty("value", 0)
         self.strength_progress_bar.setObjectName("strength_progress_bar")
         self.layout_strength.addWidget(self.strength_progress_bar)
         self.strength_help_button = QtWidgets.QToolButton(Registration)
@@ -130,6 +131,9 @@ class Ui_Registration(object):
         # Set edit to password mode.
         self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
 
+        # Set range for progress bar.
+        self.strength_progress_bar.setRange(0, 1000)
+
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
 
@@ -149,7 +153,8 @@ class Ui_Registration(object):
         # Entropy is calculated when text field is not empty.
         if self.password_edit.text():
             result = zxcvbn(self.password_edit.text())
-            print(result["guesses_log10"])
+            print(math.log2(result["guesses"]).__floor__())
+            self.strength_progress_bar.setValue(math.log2(result["guesses"]).__floor__())
         else:
             pass
 
@@ -160,14 +165,14 @@ class Ui_Registration(object):
 
     def retranslateUi(self, Registration):
         _translate = QtCore.QCoreApplication.translate
-        Registration.setWindowTitle(_translate("Registration", "Registation"))
+        Registration.setWindowTitle(_translate("Registration", "Registration"))
         self.directory_label.setText(_translate("Registration", "Directory"))
         self.directory_browse_button.setText(_translate("Registration", "Browse"))
         self.directory_help.setText(_translate("Registration", "?"))
         self.password_label.setText(_translate("Registration", "Password"))
         self.password_help.setText(_translate("Registration", "?"))
         self.strength_label.setText(_translate("Registration", "Strength"))
-        self.strength_progress_bar.setFormat(_translate("Registration", "%p%"))
+        self.strength_progress_bar.setFormat(_translate("Registration", "%v bits"))
         self.strength_help_button.setText(_translate("Registration", "?"))
         self.expert_checkBox.setText(_translate("Registration", "Expert Options"))
         self.secret_label.setText(_translate("Registration", "<html><head/><body><p>Secret File</p></body></html>"))

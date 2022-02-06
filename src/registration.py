@@ -15,7 +15,7 @@ class Ui_Registration(object):
         self.directory_label.setMaximumSize(QtCore.QSize(60, 29))
         self.directory_label.setObjectName("directory_label")
         self.layout_directory.addWidget(self.directory_label)
-        self.directory_edit = QtWidgets.QTextEdit(Registration)
+        self.directory_edit = QtWidgets.QLineEdit(Registration)
         self.directory_edit.setMinimumSize(QtCore.QSize(256, 29))
         self.directory_edit.setMaximumSize(QtCore.QSize(256, 29))
         self.directory_edit.setObjectName("directory_edit")
@@ -38,7 +38,7 @@ class Ui_Registration(object):
         self.password_label.setMaximumSize(QtCore.QSize(61, 29))
         self.password_label.setObjectName("password_label")
         self.layout_password.addWidget(self.password_label)
-        self.password_edit = QtWidgets.QTextEdit(Registration)
+        self.password_edit = QtWidgets.QLineEdit(Registration)
         self.password_edit.setMinimumSize(QtCore.QSize(256, 29))
         self.password_edit.setMaximumSize(QtCore.QSize(256, 29))
         self.password_edit.setObjectName("password_edit")
@@ -80,7 +80,7 @@ class Ui_Registration(object):
         self.secret_label.setMaximumSize(QtCore.QSize(68, 29))
         self.secret_label.setObjectName("secret_label")
         self.layout_secret_file.addWidget(self.secret_label)
-        self.secret_edit = QtWidgets.QTextEdit(Registration)
+        self.secret_edit = QtWidgets.QLineEdit(Registration)
         self.secret_edit.setMinimumSize(QtCore.QSize(256, 29))
         self.secret_edit.setMaximumSize(QtCore.QSize(256, 29))
         self.secret_edit.setObjectName("secret_edit")
@@ -127,6 +127,9 @@ class Ui_Registration(object):
         self.directory_browse_button.clicked.connect(lambda: self.browse_dir())
         self.directory_edit.setReadOnly(True)
 
+        # Set edit to password mode.
+        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
+
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
 
@@ -144,8 +147,8 @@ class Ui_Registration(object):
 
     def update_password_bits(self):
         # Entropy is calculated when text field is not empty.
-        if self.password_edit.toPlainText():
-            result = zxcvbn(self.password_edit.toPlainText())
+        if self.password_edit.text():
+            result = zxcvbn(self.password_edit.text())
             print(result["guesses_log10"])
         else:
             pass

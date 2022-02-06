@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from zxcvbn import zxcvbn
 import math
 import hashlib
@@ -181,10 +181,11 @@ class Ui_Registration(object):
         # False = One or more fields are blank.
         fields_filled = self.check_fields()
 
+        # Begin database registration once fields are non-blank.
         if not fields_filled:
-            print("Fields are non-blank.")
+            # Show a warning if given password that is deemed weak.
             if self.password_bits_value < 100:
-                print("small")
+                self.password_warning()
 
     def check_fields(self):
         error = 0
@@ -206,6 +207,27 @@ class Ui_Registration(object):
             return True
         else:
             return False
+
+    def password_warning(self):
+        message = QMessageBox()
+        message.setWindowTitle("Weak Password Detected")
+        message.setText("""
+                        Your password appears to be weak.
+                        Weak password make it easier for people
+                        to hack your account. While you may proceed 
+                        with the current password, it is strongly 
+                        recommended that you set a password of more 
+                        than 100 bits as shown in the progress bar.
+                        
+                        Click "Yes" to proceed or "No" to go back.""")
+        message.setIcon(QMessageBox.Warning)
+        message.setStandardButtons(QMessageBox.No|QMessageBox.Yes)
+        message.setDefaultButton(QMessageBox.No)
+        message.buttonClicked.connect(self.password_warning_response)
+        x = message.exec_()
+
+    def password_warning_response(self, response):
+        print(response.text())
 
     def retranslateUi(self, Registration):
         _translate = QtCore.QCoreApplication.translate

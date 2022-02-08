@@ -8,7 +8,7 @@ import sqlite3
 import math
 import hash
 import io
-
+import file_explorer
 
 
 class Ui_Registration(object):
@@ -146,7 +146,8 @@ class Ui_Registration(object):
         self.strength_progress_bar.setValue(0)
 
         # Browse for file path.
-        self.secret_button.clicked.connect(lambda: self.browse_file())
+        self.secret_button.clicked.connect(lambda: file_explorer.browse_file(self.secret_edit,
+                                                                             self.secret_warning))
         self.secret_edit.setReadOnly(True)
 
         # Ok button clicked; create database from provided fields.
@@ -199,14 +200,6 @@ class Ui_Registration(object):
         if self.directory_edit.text():
             self.directory_warning.hide()
 
-    def browse_file(self):
-        self.file_path = QtWidgets.QFileDialog.getOpenFileName()
-        self.secret_edit.setText(self.file_path[0])
-
-        # Hides file warning if file path is selected.
-        if self.secret_edit.text():
-            self.secret_warning.hide()
-
     def registration(self):
         # Function checks if fields are entered.
         # True = All needed fields are non-blank.
@@ -248,9 +241,9 @@ class Ui_Registration(object):
                         print("Database created.")
 
                         # Start preparation to encrypt database.
-                        password = hash.password_hash_and_salt(self.expert_checkBox.isChecked(),
-                                                               self.secret_edit.text(),
-                                                               self.password_edit.text())
+                        password = hash.password_hash_collection(self.expert_checkBox.isChecked(),
+                                                                 self.secret_edit.text(),
+                                                                 self.password_edit.text())
 
                         self.database_encryption(password)
 

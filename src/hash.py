@@ -1,7 +1,7 @@
 import hashlib
 
 
-def password_hash_and_salt(checkbox, secret_edit, password_edit):
+def password_hash_collection(checkbox, secret_edit, password_edit):
     """
     Hash password from password field & secret file (if selected).
 

@@ -3,6 +3,7 @@ import pyAesCrypt
 from PyQt5 import QtCore, QtWidgets
 from registration import Ui_Registration
 import hash
+import file_explorer
 
 
 class Ui_Login(object):
@@ -110,11 +111,13 @@ class Ui_Login(object):
         self.secret_help_button.hide()
 
         # Browse for folder path to save password database file in.
-        self.directory_browse_button.clicked.connect(lambda: self.select_db())
+        self.directory_browse_button.clicked.connect(lambda: file_explorer.browse_file(self.directory_edit,
+                                                                                       self.directory_warning))
         self.directory_edit.setReadOnly(True)
 
         # Browse for file path.
-        self.secret_button.clicked.connect(lambda: self.browse_file())
+        self.secret_button.clicked.connect(lambda: file_explorer.browse_file(self.secret_edit,
+                                                                             self.secret_warning))
         self.secret_edit.setReadOnly(True)
 
         # Clear warning labels.
@@ -169,21 +172,7 @@ class Ui_Login(object):
             self.password_view_button.setText("View")
             self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
 
-    def select_db(self):
-        self.dir_path = QtWidgets.QFileDialog.getOpenFileName()
-        self.directory_edit.setText(self.dir_path[0])
 
-        # Hides directory warning if directory path is selected.
-        if self.directory_edit.text():
-            self.directory_warning.hide()
-
-    def browse_file(self):
-        self.file_path = QtWidgets.QFileDialog.getOpenFileName()
-        self.secret_edit.setText(self.file_path[0])
-
-        # Hides file warning if file path is selected.
-        if self.secret_edit.text():
-            self.secret_warning.hide()
 
     def login(self):
         # Function checks if fields are entered.
@@ -192,26 +181,28 @@ class Ui_Login(object):
         fields_filled = self.check_fields()
 
         if not fields_filled:
-            password = hash.password_hash_and_salt(self.expert_checkBox.isChecked(),
-                                                   self.secret_edit.text(),
-                                                   self.password_edit.text())
+            password = hash.password_hash_collection(self.expert_checkBox.isChecked(),
+                                                     self.secret_edit.text(),
+                                                     self.password_edit.text())
 
             database_path = self.directory_edit.text()
 
             buffer_size = 64 * 1024
-
-            with open(database_path, 'rb') as file:
-                cipher = io.BytesIO(file.read())
-                # initialize decrypted binary stream
-                decrypted = io.BytesIO()
-                # get ciphertext length
-                ciphertext_length = len(cipher.getvalue())
-                # go back to the start of the ciphertext stream
-                cipher.seek(0)
-                # decrypt stream
-                pyAesCrypt.decryptStream(cipher, decrypted, password, buffer_size, ciphertext_length)
-                # print decrypted data
-                print("Decrypted data:\n" + str(decrypted.getvalue()))
+            try:
+                with open(database_path, 'rb') as file:
+                    cipher = io.BytesIO(file.read())
+                    # initialize decrypted binary stream
+                    decrypted = io.BytesIO()
+                    # get ciphertext length
+                    ciphertext_length = len(cipher.getvalue())
+                    # go back to the start of the ciphertext stream
+                    cipher.seek(0)
+                    # decrypt stream
+                    pyAesCrypt.decryptStream(cipher, decrypted, password, buffer_size, ciphertext_length)
+                    # print decrypted data
+                    print("Decrypted data:\n" + str(decrypted.getvalue()))
+            except:
+                print("Wrong password?")
 
     def check_fields(self):
         error = 0

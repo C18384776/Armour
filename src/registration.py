@@ -1,10 +1,12 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+import pyAesCrypt
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from zxcvbn import zxcvbn
-import math
-import hashlib
 from sqlite3 import Error
 import sqlite3
+import math
+import hash
+import io
 
 
 class Ui_Registration(object):
@@ -224,8 +226,8 @@ class Ui_Registration(object):
                 if self.password_dialog_response == "No":
                     return 1
                 else:
-                    database_save_path = self.directory_edit.text()
-                    database_save_path = database_save_path + "/Password.db"
+                    self.database_save_path = self.directory_edit.text()
+                    self.database_save_path = self.database_save_path + "/Password.db"
 
                     sql_create_group_table = """
                                             CREATE TABLE IF NOT EXISTS groups (
@@ -240,16 +242,73 @@ class Ui_Registration(object):
                                                 groupId integer NOT NULL,
                                                 FOREIGN KEY (groupId) REFERENCES groups(groupId));"""
 
-                    connection = self.make_connection(database_save_path)
+                    connection = self.make_connection(self.database_save_path)
 
                     if connection is not None:
                         self.make_table(connection, sql_create_group_table)
                         self.make_table(connection, sql_create_password_table)
                         connection.commit()
                         connection.close()
-                        print("Database Made")
+                        print("Database created.")
+
+                        # Start preparation to encrypt database.
+                        password = self.password_hash_and_salt()
+
+                        self.database_encryption(password)
+
+                        print("Database encrypted")
+
+                        Registration.close()
                     else:
                         print("Problem making database?")
+
+    def database_encryption(self, password):
+        """
+        Encrypts database file.
+
+        :param password:
+        Password that will encrypt database file.
+        """
+        buffer_size = 64 * 1024
+
+        try:
+            with open(self.database_save_path, 'rb') as file:
+                content = file.read()
+                # Input plaintext binary stream
+                plaintext = io.BytesIO(content)
+                # Initialize ciphertext binary stream
+                cipher = io.BytesIO()
+                # encrypt stream
+                pyAesCrypt.encryptStream(plaintext, cipher, password, buffer_size)
+                # print encrypted data
+                print("This is the ciphertext:\n" + str(cipher.getvalue()))
+                file.close()
+
+            # Writing encryption
+            with open(self.database_save_path, 'wb') as file:
+                file.write(cipher.getvalue())
+                file.close()
+        except:
+            print("Error occurred in method database_encryption")
+
+    def password_hash_and_salt(self):
+        """
+        Hash & salt password from password field & secret file (if selected).
+        """
+        expert_file_hash = None
+        if self.expert_checkBox.isChecked():
+            print(self.secret_edit.text())
+            expert_file_hash = hash.get_hash(self.secret_edit.text(), None)
+
+        password_edit_hash = hash.get_hash(None, self.password_edit.text())
+
+        if expert_file_hash is None:
+            print("password edit hash" + str(password_edit_hash))
+            return password_edit_hash
+        else:
+            combined_password = expert_file_hash + password_edit_hash
+            print("combined pass" + str(combined_password))
+            return combined_password
 
     def make_table(self, connection, make_sql_table):
         try:
@@ -266,7 +325,6 @@ class Ui_Registration(object):
             print(e)
 
         return con
-
 
     def check_fields(self):
         error = 0
@@ -319,22 +377,21 @@ class Ui_Registration(object):
             self.password_view_button.setText("View")
             self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
 
-
     def retranslateUi(self, Registration):
         _translate = QtCore.QCoreApplication.translate
         Registration.setWindowTitle(_translate("Registration", "Registation"))
         self.directory_label.setText(_translate("Registration", "Save\n"
-"Location"))
+                                                                "Location"))
         self.directory_warning.setText(_translate("Registration", "Save location cannot be empty!"))
         self.directory_browse_button.setText(_translate("Registration", "Browse"))
         self.directory_help.setText(_translate("Registration", "?"))
         self.password_label.setText(_translate("Registration", "Master\n"
-"Password"))
+                                                               "Password"))
         self.password_warning.setText(_translate("Registration", "Master password cannot be empty!"))
         self.password_view_button.setText(_translate("Registration", "View"))
         self.password_help.setText(_translate("Registration", "?"))
         self.strength_label.setText(_translate("Registration", "Password\n"
-"Strength"))
+                                                               "Strength"))
         self.strength_progress_bar.setFormat(_translate("Registration", "%v bits"))
         self.strength_help_button.setText(_translate("Registration", "?"))
         self.expert_checkBox.setText(_translate("Registration", "Expert Options"))
@@ -349,6 +406,7 @@ class Ui_Registration(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Registration = QtWidgets.QWidget()
     ui = Ui_Registration()

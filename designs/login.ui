@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Login</class>
+ <widget class="QWidget" name="Login">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>437</width>
+    <height>349</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>437</width>
+    <height>290</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>696</width>
+    <height>349</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Registation</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_6">
+   <item>
+    <layout class="QVBoxLayout" name="main_layout">
+     <item>
+      <layout class="QHBoxLayout" name="layout_directory">
+       <item>
+        <widget class="QLabel" name="directory_label">
+         <property name="text">
+          <string>Database
+File</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::PlainText</enum>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="layout_directory_edit">
+         <item>
+          <widget class="QLineEdit" name="directory_edit"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="directory_warning">
+           <property name="text">
+            <string>Save location cannot be empty!</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="directory_browse_button">
+         <property name="text">
+          <string>Browse</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="directory_help">
+         <property name="text">
+          <string>?</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="layout_password">
+       <item>
+        <widget class="QLabel" name="password_label">
+         <property name="text">
+          <string>Password</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::PlainText</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="layout_password_edit">
+         <item>
+          <widget class="QLineEdit" name="password_edit"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="password_warning">
+           <property name="text">
+            <string>Master password cannot be empty!</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="password_view_button">
+         <property name="text">
+          <string>View</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="password_help">
+         <property name="text">
+          <string>?</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="expert_checkBox">
+       <property name="text">
+        <string>Expert Options</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="layout_secret">
+       <item>
+        <widget class="QLabel" name="secret_label">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Secret File&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="layout_secret_edit">
+         <item>
+          <widget class="QLineEdit" name="secret_edit"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="secret_warning">
+           <property name="text">
+            <string>Secret file cannot be empty!</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="secret_button">
+         <property name="text">
+          <string>Browse</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="secret_help_button">
+         <property name="text">
+          <string>?</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="layout_buttons">
+       <item>
+        <widget class="QPushButton" name="register_button">
+         <property name="text">
+          <string>Register</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="button_spacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="quit_button">
+         <property name="text">
+          <string>Quit</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="login_button">
+         <property name="text">
+          <string>Login</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

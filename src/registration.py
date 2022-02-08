@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from zxcvbn import zxcvbn
 import math
 import hashlib
+from sqlite3 import Error
+import sqlite3
 
 
 class Ui_Registration(object):
@@ -181,18 +183,31 @@ class Ui_Registration(object):
             result = zxcvbn(self.password_edit.text())
             self.password_bits_value = math.log2(result["guesses"]).__floor__()
             self.strength_progress_bar.setValue(self.password_bits_value)
+
+            # Hides password warning if a password is typed.
+            if self.password_edit.text():
+                self.password_warning.hide()
         elif self.password_edit.text() == '':
             self.strength_progress_bar.setValue(0)
-        else:
-            pass
+
+            # User is warned that password cannot be blank.
+            self.password_warning.show()
 
     def browse_dir(self):
         self.dir_path = QtWidgets.QFileDialog.getExistingDirectory()
         self.directory_edit.setText(self.dir_path)
 
+        # Hides directory warning if directory path is selected.
+        if self.directory_edit.text():
+            self.directory_warning.hide()
+
     def browse_file(self):
         self.file_path = QtWidgets.QFileDialog.getOpenFileName()
         self.secret_edit.setText(self.file_path[0])
+
+        # Hides file warning if file path is selected.
+        if self.secret_edit.text():
+            self.secret_warning.hide()
 
     def registration(self):
         # Function checks if fields are entered.
@@ -209,25 +224,63 @@ class Ui_Registration(object):
                 if self.password_dialog_response == "No":
                     return 1
                 else:
-                    pass
-                    # Creating sql connection code goes here.
+                    database_save_path = self.directory_edit.text()
+                    database_save_path = database_save_path + "/Password.db"
+
+                    sql_create_group_table = """
+                                            CREATE TABLE IF NOT EXISTS groups (
+                                                groupId integer PRIMARY KEY,
+                                                groupName text NOT NULL);"""
+
+                    sql_create_password_table = """
+                                            CREATE TABLE IF NOT EXISTS passwords (
+                                                passwordId integer PRIMARY KEY,
+                                                passwordName text,
+                                                passwordPassword NOT NULL,
+                                                groupId integer NOT NULL,
+                                                FOREIGN KEY (groupId) REFERENCES groups(groupId));"""
+
+                    connection = self.make_connection(database_save_path)
+
+                    if connection is not None:
+                        self.make_table(connection, sql_create_group_table)
+                        self.make_table(connection, sql_create_password_table)
+                        connection.commit()
+                        connection.close()
+                        print("Database Made")
+                    else:
+                        print("Problem making database?")
+
+    def make_table(self, connection, make_sql_table):
+        try:
+            cur = connection.cursor()
+            cur.execute(make_sql_table)
+        except Error as e:
+            print(e)
+
+    def make_connection(self, database_save_path):
+        con = None
+        try:
+            con = sqlite3.connect(database_save_path)
+        except Error as e:
+            print(e)
+
+        return con
+
 
     def check_fields(self):
         error = 0
 
         if self.directory_edit.text() == '':
-            print("Directory is blank")
             self.directory_warning.show()
             error = 1
 
         if self.password_edit.text() == '':
-            print("Password is blank")
             self.password_warning.show()
             error = 1
 
         if self.expert_checkBox.isChecked():
             if self.secret_edit.text() == '':
-                print("Secret file not set")
                 self.secret_warning.show()
                 error = 1
 

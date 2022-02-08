@@ -1,8 +1,12 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+import io
+import pyAesCrypt
+from PyQt5 import QtCore, QtWidgets
+from registration import Ui_Registration
+import hash
 
 
 class Ui_Login(object):
-    def setupUi(self, Login):
+    def setup_ui_login(self, Login):
         Login.setObjectName("Login")
         Login.resize(437, 349)
         Login.setMinimumSize(QtCore.QSize(437, 290))
@@ -96,12 +100,149 @@ class Ui_Login(object):
         self.main_layout.addLayout(self.layout_buttons)
         self.horizontalLayout_6.addLayout(self.main_layout)
 
+        self.register_button.clicked.connect(lambda: self.open_register_window())
+
+        # Expert checkbox is hidden by default.
+        self.expert_checkBox.stateChanged.connect(lambda: self.expert_box_clicked())
+        self.secret_label.hide()
+        self.secret_edit.hide()
+        self.secret_button.hide()
+        self.secret_help_button.hide()
+
+        # Browse for folder path to save password database file in.
+        self.directory_browse_button.clicked.connect(lambda: self.select_db())
+        self.directory_edit.setReadOnly(True)
+
+        # Browse for file path.
+        self.secret_button.clicked.connect(lambda: self.browse_file())
+        self.secret_edit.setReadOnly(True)
+
+        # Clear warning labels.
+        self.directory_warning.hide()
+        self.password_warning.hide()
+        self.secret_warning.hide()
+
+        # Cancel button clicked will close the program.
+        self.quit_button.clicked.connect(QtWidgets.QApplication.instance().quit)
+
+        # Set edit to password mode.
+        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
+
+        # Each key press on password field will call function.
+        self.password_edit.textChanged.connect(lambda: self.update_if_field_nonempty())
+
+        self.password_view_button.clicked.connect(lambda: self.view_hide_password())
+
+        self.login_button.clicked.connect(lambda: self.login())
+
         self.retranslateUi(Login)
         QtCore.QMetaObject.connectSlotsByName(Login)
 
+    def open_register_window(self):
+        """
+        Opens login view.
+        """
+        self.register_window = QtWidgets.QWidget()
+        self.ui = Ui_Registration()
+        self.ui.setup_ui_registration(self.register_window)
+        self.register_window.show()
+        Login.close()
+
+    def expert_box_clicked(self):
+        if self.expert_checkBox.isChecked():
+            self.secret_label.show()
+            self.secret_edit.show()
+            self.secret_button.show()
+            self.secret_help_button.show()
+        else:
+            self.secret_label.hide()
+            self.secret_edit.hide()
+            self.secret_button.hide()
+            self.secret_help_button.hide()
+            self.secret_warning.hide()
+
+    def view_hide_password(self):
+        if self.password_view_button.text() == "View":
+            self.password_view_button.setText("Hide")
+            self.password_edit.setEchoMode(QtWidgets.QLineEdit.Normal)
+        else:
+            self.password_view_button.setText("View")
+            self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
+
+    def select_db(self):
+        self.dir_path = QtWidgets.QFileDialog.getOpenFileName()
+        self.directory_edit.setText(self.dir_path[0])
+
+        # Hides directory warning if directory path is selected.
+        if self.directory_edit.text():
+            self.directory_warning.hide()
+
+    def browse_file(self):
+        self.file_path = QtWidgets.QFileDialog.getOpenFileName()
+        self.secret_edit.setText(self.file_path[0])
+
+        # Hides file warning if file path is selected.
+        if self.secret_edit.text():
+            self.secret_warning.hide()
+
+    def login(self):
+        # Function checks if fields are entered.
+        # True = All needed fields are non-blank.
+        # False = One or more fields are blank.
+        fields_filled = self.check_fields()
+
+        if not fields_filled:
+            password = hash.password_hash_and_salt(self.expert_checkBox.isChecked(),
+                                                   self.secret_edit.text(),
+                                                   self.password_edit.text())
+
+            database_path = self.directory_edit.text()
+
+            buffer_size = 64 * 1024
+
+            with open(database_path, 'rb') as file:
+                cipher = io.BytesIO(file.read())
+                # initialize decrypted binary stream
+                decrypted = io.BytesIO()
+                # get ciphertext length
+                ciphertext_length = len(cipher.getvalue())
+                # go back to the start of the ciphertext stream
+                cipher.seek(0)
+                # decrypt stream
+                pyAesCrypt.decryptStream(cipher, decrypted, password, buffer_size, ciphertext_length)
+                # print decrypted data
+                print("Decrypted data:\n" + str(decrypted.getvalue()))
+
+    def check_fields(self):
+        error = 0
+
+        if self.directory_edit.text() == '':
+            self.directory_warning.show()
+            error = 1
+
+        if self.password_edit.text() == '':
+            self.password_warning.show()
+            error = 1
+
+        if self.expert_checkBox.isChecked():
+            if self.secret_edit.text() == '':
+                self.secret_warning.show()
+                error = 1
+
+        if error == 1:
+            return True
+        else:
+            return False
+
+    def update_if_field_nonempty(self):
+        if self.password_edit.text() == '':
+            self.password_warning.show()
+        else:
+            self.password_warning.hide()
+
     def retranslateUi(self, Login):
         _translate = QtCore.QCoreApplication.translate
-        Login.setWindowTitle(_translate("Login", "Registation"))
+        Login.setWindowTitle(_translate("Login", "Login"))
         self.directory_label.setText(_translate("Login", "Database\n"
 "File"))
         self.directory_warning.setText(_translate("Login", "Save location cannot be empty!"))
@@ -126,6 +267,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Login = QtWidgets.QWidget()
     ui = Ui_Login()
-    ui.setupUi(Login)
+    ui.setup_ui_login(Login)
     Login.show()
     sys.exit(app.exec_())

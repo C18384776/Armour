@@ -1,6 +1,38 @@
 import hashlib
 
 
+def password_hash_and_salt(checkbox, secret_edit, password_edit):
+    """
+    Hash password from password field & secret file (if selected).
+
+    :param checkbox:
+    Checkbox checked? True/False
+
+    :param secret_edit:
+    Path of the secret file.
+
+    :param password_edit:
+    Password entered by user.
+
+    :return:
+    Combined SHA512 hashes or password hash alone if checkbox is not selected.
+    """
+    expert_file_hash = None
+    if checkbox:
+        print(secret_edit)
+        expert_file_hash = get_hash(secret_edit, None)
+
+    password_edit_hash = get_hash(None, password_edit)
+
+    if expert_file_hash is None:
+        print("password edit hash" + str(password_edit_hash))
+        return password_edit_hash
+    else:
+        combined_password = expert_file_hash + password_edit_hash
+        print("combined pass" + str(combined_password))
+        return combined_password
+
+
 def get_hash(file_path, text):
     """
     Compute the SHA512 hash of a file or text.

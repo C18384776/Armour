@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pyAesCrypt
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
@@ -9,8 +10,9 @@ import hash
 import io
 
 
+
 class Ui_Registration(object):
-    def setupUi(self, Registration):
+    def setup_ui_registration(self, Registration):
         Registration.setObjectName("Registration")
         Registration.resize(437, 290)
         Registration.setMinimumSize(QtCore.QSize(437, 290))
@@ -108,9 +110,6 @@ class Ui_Registration(object):
         self.main_layout.addLayout(self.layout_secret)
         self.layout_buttons = QtWidgets.QHBoxLayout()
         self.layout_buttons.setObjectName("layout_buttons")
-        self.login_button = QtWidgets.QPushButton(Registration)
-        self.login_button.setObjectName("login_button")
-        self.layout_buttons.addWidget(self.login_button)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.layout_buttons.addItem(spacerItem)
         self.quit_button = QtWidgets.QPushButton(Registration)
@@ -159,9 +158,6 @@ class Ui_Registration(object):
         self.directory_warning.hide()
         self.password_warning.hide()
         self.secret_warning.hide()
-
-        self.retranslateUi(Registration)
-        QtCore.QMetaObject.connectSlotsByName(Registration)
 
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
@@ -252,7 +248,9 @@ class Ui_Registration(object):
                         print("Database created.")
 
                         # Start preparation to encrypt database.
-                        password = self.password_hash_and_salt()
+                        password = hash.password_hash_and_salt(self.expert_checkBox.isChecked(),
+                                                               self.secret_edit.text(),
+                                                               self.password_edit.text())
 
                         self.database_encryption(password)
 
@@ -290,25 +288,6 @@ class Ui_Registration(object):
                 file.close()
         except:
             print("Error occurred in method database_encryption")
-
-    def password_hash_and_salt(self):
-        """
-        Hash & salt password from password field & secret file (if selected).
-        """
-        expert_file_hash = None
-        if self.expert_checkBox.isChecked():
-            print(self.secret_edit.text())
-            expert_file_hash = hash.get_hash(self.secret_edit.text(), None)
-
-        password_edit_hash = hash.get_hash(None, self.password_edit.text())
-
-        if expert_file_hash is None:
-            print("password edit hash" + str(password_edit_hash))
-            return password_edit_hash
-        else:
-            combined_password = expert_file_hash + password_edit_hash
-            print("combined pass" + str(combined_password))
-            return combined_password
 
     def make_table(self, connection, make_sql_table):
         try:
@@ -399,7 +378,6 @@ class Ui_Registration(object):
         self.secret_warning.setText(_translate("Registration", "Secret file cannot be empty!"))
         self.secret_button.setText(_translate("Registration", "Browse"))
         self.secret_help_button.setText(_translate("Registration", "?"))
-        self.login_button.setText(_translate("Registration", "Login"))
         self.quit_button.setText(_translate("Registration", "Quit"))
         self.register_button.setText(_translate("Registration", "Register"))
 
@@ -410,6 +388,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Registration = QtWidgets.QWidget()
     ui = Ui_Registration()
-    ui.setupUi(Registration)
+    ui.setup_ui_registration(Registration)
     Registration.show()
     sys.exit(app.exec_())

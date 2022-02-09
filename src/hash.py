@@ -1,6 +1,7 @@
 import hashlib
 
 
+# Repurpose password_edit to overwrite password.
 def password_hash_collection(checkbox, secret_edit, password_edit):
     """
     Hash password from password field & secret file (if selected).

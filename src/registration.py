@@ -7,7 +7,7 @@ import crypto
 
 
 class UiRegistration(object):
-    def __init__(self):
+    def setup_ui_registration(self, Registration):
         self.password_bits_value = 0
         self.register_button = QtWidgets.QPushButton(Registration)
         self.quit_button = QtWidgets.QPushButton(Registration)
@@ -40,8 +40,6 @@ class UiRegistration(object):
         self.layout_directory = QtWidgets.QHBoxLayout()
         self.main_layout = QtWidgets.QVBoxLayout()
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout(Registration)
-
-    def setup_ui_registration(self, Registration):
         Registration.setObjectName("Registration")
         Registration.resize(437, 290)
         Registration.setMinimumSize(QtCore.QSize(437, 290))

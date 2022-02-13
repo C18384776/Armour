@@ -4,6 +4,7 @@ from PyQt5.QtCore import QEvent
 from PyQt5.QtWidgets import QMainWindow, QApplication, QAction
 
 from ui_main import *
+from registration import UiRegistration
 
 
 class MainWindow(QMainWindow):
@@ -14,6 +15,15 @@ class MainWindow(QMainWindow):
         self.show()
 
         self.ui.listWidget_groups.installEventFilter(self)
+
+        self.ui.actionNew_Database.triggered.connect(lambda: self.new_database_clicked())
+
+    def new_database_clicked(self):
+        self.reg_window = QtWidgets.QWidget()
+        self.userInt = UiRegistration()
+        self.userInt.setup_ui_registration(self.reg_window)
+        self.reg_window.show()
+        print("done")
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

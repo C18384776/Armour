@@ -3,7 +3,7 @@ import pyAesCrypt
 import hash
 import database
 import warn
-from login import UiLogin
+
 
 def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret_edit, password_edit):
     # Function checks if fields are entered.
@@ -56,7 +56,6 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
                     database_encryption(password, database_save_path)
 
                     print("Database encrypted")
-
                 else:
                     print("Problem making database?")
 
@@ -119,5 +118,6 @@ def login(check_fields, expert_checkbox, secret_edit, password_edit, directory_e
                 pyAesCrypt.decryptStream(cipher, decrypted, password, buffer_size, ciphertext_length)
                 # print decrypted data
                 print("Decrypted data:\n" + str(decrypted.getvalue()))
+
         except:
             print("Wrong password?")

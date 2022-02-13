@@ -1,7 +1,4 @@
-import io
-import pyAesCrypt
 from PyQt5 import QtCore, QtWidgets
-import hash
 import file_explorer
 import error_checking
 import crypto
@@ -138,22 +135,24 @@ class UiLogin(object):
 
         self.password_view_button.clicked.connect(lambda: error_checking.view_hide_password(self.password_view_button,
                                                                                             self.password_edit))
-
-        self.login_button.clicked.connect(lambda: crypto.login(
-            error_checking.check_fields(self.directory_edit,
-                                        self.directory_warning,
-                                        self.password_edit,
-                                        self.password_warning,
-                                        self.expert_checkBox.isChecked(),
-                                        self.secret_edit,
-                                        self.secret_warning),
-            self.expert_checkBox.isChecked(),
-            self.secret_edit,
-            self.password_edit,
-            self.directory_edit))
+        self.login_button.clicked.connect(lambda: self.login())
 
         self.retranslateUi(Login)
         QtCore.QMetaObject.connectSlotsByName(Login)
+
+    def login(self):
+        self.master_password, self.database = \
+            crypto.login(error_checking.check_fields(self.directory_edit,
+                                                     self.directory_warning,
+                                                     self.password_edit,
+                                                     self.password_warning,
+                                                     self.expert_checkBox.isChecked(),
+                                                     self.secret_edit,
+                                                     self.secret_warning),
+                         self.expert_checkBox.isChecked(),
+                         self.secret_edit,
+                         self.password_edit,
+                         self.directory_edit)
 
     def update_if_field_nonempty(self):
         if self.password_edit.text() == '':
@@ -183,6 +182,7 @@ class UiLogin(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Login = QtWidgets.QWidget()
     ui = UiLogin()

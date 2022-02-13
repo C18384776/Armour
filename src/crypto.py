@@ -118,6 +118,6 @@ def login(check_fields, expert_checkbox, secret_edit, password_edit, directory_e
                 pyAesCrypt.decryptStream(cipher, decrypted, password, buffer_size, ciphertext_length)
                 # print decrypted data
                 print("Decrypted data:\n" + str(decrypted.getvalue()))
-
+                return password, decrypted.getvalue()
         except:
             print("Wrong password?")

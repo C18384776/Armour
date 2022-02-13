@@ -21,17 +21,23 @@ class MainWindow(QMainWindow):
 
         self.ui.actionOpen_Database.triggered.connect(lambda: self.open_database_clicked())
 
+        self.ui.actionAbout.triggered.connect(lambda: self.testing())
+
+    def testing(self):
+        print(self.UI_Log.master_password)
+        print(self.UI_Log.database)
+
     def new_database_clicked(self):
         self.reg_window = QtWidgets.QWidget()
-        self.userInt = UiRegistration()
-        self.userInt.setup_ui_registration(self.reg_window)
+        self.UI_Reg = UiRegistration()
+        self.UI_Reg.setup_ui_registration(self.reg_window)
         self.reg_window.show()
         print("Register Opened")
 
     def open_database_clicked(self):
         self.login_window = QtWidgets.QWidget()
-        self.userInt = UiLogin()
-        self.userInt.setup_ui_login(self.login_window)
+        self.UI_Log = UiLogin()
+        self.UI_Log.setup_ui_login(self.login_window)
         self.login_window.show()
         print("Login Opened")
 

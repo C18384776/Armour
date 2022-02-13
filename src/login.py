@@ -1,7 +1,6 @@
 import io
 import pyAesCrypt
 from PyQt5 import QtCore, QtWidgets
-from registration import UiRegistration
 import hash
 import file_explorer
 import error_checking
@@ -11,7 +10,6 @@ class UiLogin(object):
     def __init__(self):
         self.login_button = QtWidgets.QPushButton(Login)
         self.quit_button = QtWidgets.QPushButton(Login)
-        self.register_button = QtWidgets.QPushButton(Login)
         self.layout_buttons = QtWidgets.QHBoxLayout()
         self.secret_help_button = QtWidgets.QToolButton(Login)
         self.secret_button = QtWidgets.QPushButton(Login)
@@ -93,8 +91,6 @@ class UiLogin(object):
         self.layout_secret.addWidget(self.secret_help_button)
         self.main_layout.addLayout(self.layout_secret)
         self.layout_buttons.setObjectName("layout_buttons")
-        self.register_button.setObjectName("register_button")
-        self.layout_buttons.addWidget(self.register_button)
         spacer_item = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.layout_buttons.addItem(spacer_item)
         self.quit_button.setObjectName("quit_button")
@@ -103,8 +99,6 @@ class UiLogin(object):
         self.layout_buttons.addWidget(self.login_button)
         self.main_layout.addLayout(self.layout_buttons)
         self.horizontalLayout_6.addLayout(self.main_layout)
-
-        self.register_button.clicked.connect(lambda: self.open_register_window())
 
         # Expert checkbox is hidden by default.
         self.expert_checkBox.stateChanged.connect(
@@ -150,16 +144,6 @@ class UiLogin(object):
 
         self.retranslateUi(Login)
         QtCore.QMetaObject.connectSlotsByName(Login)
-
-    def open_register_window(self):
-        """
-        Opens login view.
-        """
-        self.register_window = QtWidgets.QWidget()
-        self.ui = UiRegistration()
-        self.ui.setup_ui_registration(self.register_window)
-        self.register_window.show()
-        Login.close()
 
     def login(self):
         # Function checks if fields are entered.
@@ -234,7 +218,6 @@ class UiLogin(object):
         self.secret_warning.setText(_translate("Login", "Secret file cannot be empty!"))
         self.secret_button.setText(_translate("Login", "Browse"))
         self.secret_help_button.setText(_translate("Login", "?"))
-        self.register_button.setText(_translate("Login", "Register"))
         self.quit_button.setText(_translate("Login", "Quit"))
         self.login_button.setText(_translate("Login", "Login"))
 

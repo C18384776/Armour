@@ -127,7 +127,7 @@ class UiLogin(object):
         self.secret_warning.hide()
 
         # Cancel button clicked will close the program.
-        self.quit_button.clicked.connect(QtWidgets.QApplication.instance().quit)
+        self.quit_button.clicked.connect(Login.close)
 
         # Set edit to password mode.
         self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)

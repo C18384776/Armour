@@ -132,7 +132,7 @@ class UiRegistration(object):
         self.secret_help_button.hide()
 
         # Cancel button clicked will close the program.
-        self.quit_button.clicked.connect(QtWidgets.QApplication.instance().quit)
+        self.quit_button.clicked.connect(Registration.close)
 
         # Each key press on password field will call function.
         self.password_edit.textChanged.connect(lambda: self.update_password_bits())

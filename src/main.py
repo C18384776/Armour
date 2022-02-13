@@ -1,13 +1,10 @@
-import sys
-
 from PyQt5.QtCore import QEvent
 from PyQt5.QtWidgets import QMainWindow, QApplication, QAction
-
 from ui_main import *
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -31,12 +28,16 @@ class MainWindow(QMainWindow):
 
                 if menu_select == new_group:
                     print("new group")
+                    print(source.itemAt(event.pos()).text())
                 elif menu_select == edit_group:
                     print("edit group")
+                    print(source.itemAt(event.pos()).text())
                 elif menu_select == delete_group:
                     print("Delete group")
+                    print(source.itemAt(event.pos()).text())
                 else:
                     print("user clicked out of group.")
+                    print(source.itemAt(event.pos()).text())
 
                 return True
             # User right clicks empty space.
@@ -55,8 +56,8 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    import sys
     app = QApplication(sys.argv)
-
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())

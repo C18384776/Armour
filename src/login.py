@@ -1,10 +1,8 @@
-import io
-import pyAesCrypt
 from PyQt5 import QtCore, QtWidgets
-from registration import UiRegistration
-import hash
+from registration import *
 import file_explorer
 import error_checking
+import crypto
 
 
 class UiLogin(object):
@@ -146,7 +144,18 @@ class UiLogin(object):
         self.password_view_button.clicked.connect(lambda: error_checking.view_hide_password(self.password_view_button,
                                                                                             self.password_edit))
 
-        self.login_button.clicked.connect(lambda: self.login())
+        self.login_button.clicked.connect(lambda: crypto.login(
+            error_checking.check_fields(self.directory_edit,
+                                        self.directory_warning,
+                                        self.password_edit,
+                                        self.password_warning,
+                                        self.expert_checkBox.isChecked(),
+                                        self.secret_edit,
+                                        self.secret_warning),
+            self.expert_checkBox.isChecked(),
+            self.secret_edit,
+            self.password_edit,
+            self.directory_edit))
 
         self.retranslateUi(Login)
         QtCore.QMetaObject.connectSlotsByName(Login)
@@ -160,57 +169,6 @@ class UiLogin(object):
         self.ui.setup_ui_registration(self.register_window)
         self.register_window.show()
         Login.close()
-
-    def login(self):
-        # Function checks if fields are entered.
-        # True = All needed fields are non-blank.
-        # False = One or more fields are blank.
-        fields_filled = self.check_fields()
-
-        if not fields_filled:
-            password = hash.password_hash_collection(self.expert_checkBox.isChecked(),
-                                                     self.secret_edit.text(),
-                                                     self.password_edit.text())
-
-            database_path = self.directory_edit.text()
-
-            buffer_size = 64 * 1024
-            try:
-                with open(database_path, 'rb') as file:
-                    cipher = io.BytesIO(file.read())
-                    # initialize decrypted binary stream
-                    decrypted = io.BytesIO()
-                    # get ciphertext length
-                    ciphertext_length = len(cipher.getvalue())
-                    # go back to the start of the ciphertext stream
-                    cipher.seek(0)
-                    # decrypt stream
-                    pyAesCrypt.decryptStream(cipher, decrypted, password, buffer_size, ciphertext_length)
-                    # print decrypted data
-                    print("Decrypted data:\n" + str(decrypted.getvalue()))
-            except:
-                print("Wrong password?")
-
-    def check_fields(self):
-        error = 0
-
-        if self.directory_edit.text() == '':
-            self.directory_warning.show()
-            error = 1
-
-        if self.password_edit.text() == '':
-            self.password_warning.show()
-            error = 1
-
-        if self.expert_checkBox.isChecked():
-            if self.secret_edit.text() == '':
-                self.secret_warning.show()
-                error = 1
-
-        if error == 1:
-            return True
-        else:
-            return False
 
     def update_if_field_nonempty(self):
         if self.password_edit.text() == '':

@@ -4,7 +4,7 @@ from PyQt5.QtCore import QEvent
 from PyQt5.QtWidgets import QMainWindow, QApplication, QAction
 
 from ui_main import *
-
+from registration import UiRegistration
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -13,7 +13,18 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.show()
 
+        # ListWidget listens to right mouse click.
         self.ui.listWidget_groups.installEventFilter(self)
+
+        # New database button click.
+    #     self.ui.actionNew_Database.triggered.connect(lambda: self.new_database_clicked())
+    #
+    # def new_database_clicked(self):
+    #     self.register_window = QtWidgets.QWidget()
+    #     self.userInterface = UiRegistration()
+    #     self.userInterface.setup_ui_registration(self.register_window)
+    #     self.register_window.show()
+
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

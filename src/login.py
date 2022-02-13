@@ -7,7 +7,7 @@ import error_checking
 
 
 class UiLogin(object):
-    def __init__(self):
+    def setup_ui_login(self, Login):
         self.login_button = QtWidgets.QPushButton(Login)
         self.quit_button = QtWidgets.QPushButton(Login)
         self.layout_buttons = QtWidgets.QHBoxLayout()
@@ -35,8 +35,6 @@ class UiLogin(object):
         self.layout_directory = QtWidgets.QHBoxLayout()
         self.main_layout = QtWidgets.QVBoxLayout()
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout(Login)
-
-    def setup_ui_login(self, Login):
         Login.setObjectName("Login")
         Login.resize(437, 349)
         Login.setMinimumSize(QtCore.QSize(437, 290))

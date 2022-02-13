@@ -1,7 +1,4 @@
-import io
-import pyAesCrypt
 from PyQt5 import QtCore, QtWidgets
-import hash
 import file_explorer
 import error_checking
 import crypto
@@ -9,6 +6,8 @@ import crypto
 
 class UiLogin(object):
     def setup_ui_login(self, Login):
+        self.password = None
+        self.database = None
         self.login_button = QtWidgets.QPushButton(Login)
         self.quit_button = QtWidgets.QPushButton(Login)
         self.layout_buttons = QtWidgets.QHBoxLayout()
@@ -160,6 +159,16 @@ class UiLogin(object):
             self.password_warning.show()
         else:
             self.password_warning.hide()
+
+    def set_keys(self, paswd, data):
+        self.password = paswd
+        self.database = data
+
+    def get_pass(self):
+        return self.password
+
+    def get_database(self):
+        return self.database
 
     def retranslateUi(self, Login):
         _translate = QtCore.QCoreApplication.translate

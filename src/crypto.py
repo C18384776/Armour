@@ -23,6 +23,7 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
             else:
                 database_save_path = directory_edit.text()
                 database_save_path = database_save_path + "/Password.db"
+                print(database_save_path)
 
                 sql_create_group_table = """
                                         CREATE TABLE IF NOT EXISTS groups (
@@ -90,3 +91,33 @@ def database_encryption(password, database_save_path):
             file.close()
     except:
         print("Error occurred in method database_encryption")
+
+
+def login(check_fields, expert_checkbox, secret_edit, password_edit, directory_edit):
+    # Function checks if fields are entered.
+    # True = All needed fields are non-blank.
+    # False = One or more fields are blank.
+    if not check_fields:
+        password = hash.password_hash_collection(expert_checkbox,
+                                                 secret_edit.text(),
+                                                 password_edit.text())
+
+        database_path = directory_edit.text()
+
+        buffer_size = 64 * 1024
+        try:
+            with open(database_path, 'rb') as file:
+                cipher = io.BytesIO(file.read())
+                # initialize decrypted binary stream
+                decrypted = io.BytesIO()
+                # get ciphertext length
+                ciphertext_length = len(cipher.getvalue())
+                # go back to the start of the ciphertext stream
+                cipher.seek(0)
+                # decrypt stream
+                pyAesCrypt.decryptStream(cipher, decrypted, password, buffer_size, ciphertext_length)
+                # print decrypted data
+                print("Decrypted data:\n" + str(decrypted.getvalue()))
+
+        except:
+            print("Wrong password?")

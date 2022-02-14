@@ -39,9 +39,10 @@ class MainWindow(QMainWindow):
 
         con = database.make_connection("/tmp/armour.db")
 
-        with open("testing.db", 'rb') as file:
-            file.read()
-            print(file.read())
+
+        # with open("testing.db", 'rb') as file:
+        #     file.read()
+        #     print(file.read())
 
     def new_database_clicked(self):
         self.reg_window = QtWidgets.QWidget()

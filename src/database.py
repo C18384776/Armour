@@ -21,7 +21,7 @@ def make_connection(database_save_path):
     return con
 
 
-def database_query(connection, query):
+def database_query(connection, query, variables):
     """
     Attempts to perform an SQLite3 query.
 
@@ -30,9 +30,16 @@ def database_query(connection, query):
 
     :param query:
     User given query to be performed to a given SQLite3 database.
+
+    :param variables:
     """
     try:
-        cur = connection.cursor()
-        cur.execute(query)
+        if variables is None:
+            cur = connection.cursor()
+            cur.execute(query)
+        else:
+            cur = connection.cursor()
+            cur.execute(query, variables)
+            print("was inside if else in database_query")
     except Error as e:
         print(e)

@@ -27,23 +27,28 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
 
                 sql_create_group_table = """
                                         CREATE TABLE IF NOT EXISTS groups (
-                                            groupId integer PRIMARY KEY,
+                                            groupId INTEGER PRIMARY KEY,
                                             groupName text NOT NULL);"""
 
                 sql_create_password_table = """
                                         CREATE TABLE IF NOT EXISTS passwords (
-                                            passwordId integer PRIMARY KEY,
+                                            passwordId INTEGER PRIMARY KEY,
                                             passwordName text,
                                             passwordPassword NOT NULL,
                                             groupId integer NOT NULL,
                                             FOREIGN KEY (groupId) REFERENCES groups(groupId));"""
 
+                sql_group_insert = """INSERT INTO groups(groupName) VALUES(?)"""
+
                 connection = database.make_connection(database_save_path)
                 print("connection made? {}".format(connection))
 
                 if connection is not None:
-                    database.database_query(connection, sql_create_group_table)
-                    database.database_query(connection, sql_create_password_table)
+                    group_name = ['Social Media']
+
+                    database.database_query(connection, sql_create_group_table, None)
+                    database.database_query(connection, sql_create_password_table, None)
+                    database.database_query(connection, sql_group_insert, group_name)
                     connection.commit()
                     connection.close()
                     print("Database created.")

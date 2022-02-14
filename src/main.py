@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import QEvent
+from PyQt5.QtCore import QEvent, QEventLoop
 from PyQt5.QtWidgets import QMainWindow, QApplication, QAction
 
 from ui_main import *
@@ -23,6 +23,9 @@ class MainWindow(QMainWindow):
 
         self.ui.actionAbout.triggered.connect(lambda: self.testing())
 
+        self.current_password = None
+        self.current_database = None
+
     def testing(self):
         print(self.UI_Log.master_password)
         print(self.UI_Log.database)
@@ -39,7 +42,12 @@ class MainWindow(QMainWindow):
         self.UI_Log = UiLogin()
         self.UI_Log.setup_ui_login(self.login_window)
         self.login_window.show()
+        loop = QEventLoop()
+        # self.login_window.destroyed.connect(loop.quit)
+        self.login_window.
+        loop.exec()
         print("Login Opened")
+        print("Data passed {}".format(self.UI_Log.master_password))
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

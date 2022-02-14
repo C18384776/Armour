@@ -136,9 +136,18 @@ class UiLogin(object):
         self.password_view_button.clicked.connect(lambda: error_checking.view_hide_password(self.password_view_button,
                                                                                             self.password_edit))
         self.login_button.clicked.connect(lambda: self.login())
+        self.login_button.clicked.connect(lambda: self.login_close(Login))
 
         self.retranslateUi(Login)
         QtCore.QMetaObject.connectSlotsByName(Login)
+
+        self.master_password = None
+        self.database = None
+
+    def login_close(self, Login):
+        # Closes login view if success.
+        if self.master_password is not None:
+            Login.close()
 
     def login(self):
         self.master_password, self.database = \

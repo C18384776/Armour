@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import QEvent, QEventLoop
-from PyQt5.QtWidgets import QMainWindow, QApplication, QAction
+from PyQt5.QtWidgets import QMainWindow, QApplication, QAction, QInputDialog, QLineEdit
 
 from ui_main import *
 from registration import UiRegistration
@@ -27,22 +27,33 @@ class MainWindow(QMainWindow):
         self.current_password = None
         self.current_database = None
         self.current_selected_group = None
+        self.con = None
 
     def testing(self):
         print(self.UI_Log.master_password)
         print(self.UI_Log.database)
 
-    def reload_database(self):
+    def open_database(self):
         # Do windows later...
         with open("/tmp/armour.db", 'wb') as file:
             file.write(self.current_database)
             file.close()
 
         self.con = database.make_connection("/tmp/armour.db")
+        ### Need to close database connection someday.
+
+    def reload_database(self):
+        # If database not loaded in.
+        if self.con is None:
+            self.open_database()
+            print("CONNECTION NOT HAPPENED")
 
         self.cur = self.con.cursor()
         self.cur.execute("SELECT * FROM groups")
         groups = self.cur.fetchall()
+
+        # Clear groups before import
+        self.ui.listWidget_groups.clear()
 
         for group in groups:
             self.ui.listWidget_groups.addItem(group[1])
@@ -79,6 +90,26 @@ class MainWindow(QMainWindow):
             print("database passed {}".format(self.current_database))
             self.reload_database()
 
+    def add_to_group(self):
+        text, submit = QInputDialog.getText(self, "Add a new group", "Enter new group name")
+        if submit and text != '':
+            self.ui.listWidget_groups.addItem(text)
+            sql_group_insert = """INSERT INTO groups(groupName) VALUES(?)"""
+            new_group_name = [text]
+            database.database_query(self.con, sql_group_insert, new_group_name)
+            self.con.commit()
+            self.reload_database()
+
+    def edit_group(self, edit_group_location, group_to_edit):
+        print("in edit group with {}".format(group_to_edit))
+        if group_to_edit is not None:
+            text, submit = QInputDialog.getText(self, "Edit a group", "Edit group name", QLineEdit.Normal, group_to_edit)
+
+            if submit and text != '':
+                edit_group_location.setText(text)
+                # self.ui.listWidget_groups.itemAt(edit_group_location).setText(text)
+
+
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:
             menu = QtWidgets.QMenu()
@@ -94,17 +125,13 @@ class MainWindow(QMainWindow):
                 menu_select = menu.exec(event.globalPos())
 
                 if menu_select == new_group:
+                    self.add_to_group()
                     print(source.itemAt(event.pos()))
                     print("new group")
                 elif menu_select == edit_group:
-                    # Make selected item editable.
-                    self.ui.listWidget_groups.itemAt(event.pos()).\
-                        setFlags(self.ui.listWidget_groups.itemAt(event.pos()).flags()
-                                 | QtCore.Qt.ItemIsEditable)
-
-                    # Edit selected item.
-                    self.ui.listWidget_groups.editItem(source.itemAt(event.pos()))
-
+                    temp = source.itemAt(event.pos())
+                    print(temp)
+                    self.edit_group(source.itemAt(event.pos()), temp.text())
                     print(source.itemAt(event.pos()))
                     print("edit group")
                 elif menu_select == delete_group:
@@ -121,6 +148,7 @@ class MainWindow(QMainWindow):
                 menu_select = menu.exec(event.globalPos())
 
                 if menu_select == new_group:
+                    self.add_to_group()
                     print(source.itemAt(event.pos()))
                     print("User clicked on new group")
                 print("user clicked on non-group")

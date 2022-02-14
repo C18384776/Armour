@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QAction
 from ui_main import *
 from registration import UiRegistration
 from login import UiLogin
+import database
 
 
 class MainWindow(QMainWindow):
@@ -29,6 +30,18 @@ class MainWindow(QMainWindow):
     def testing(self):
         print(self.UI_Log.master_password)
         print(self.UI_Log.database)
+
+    def reload_database(self):
+        # Do windows later...
+        with open("/tmp/armour.db", 'wb') as file:
+            file.write(self.current_database)
+            file.close()
+
+        con = database.make_connection("/tmp/armour.db")
+
+        with open("testing.db", 'rb') as file:
+            file.read()
+            print(file.read())
 
     def new_database_clicked(self):
         self.reg_window = QtWidgets.QWidget()
@@ -54,6 +67,7 @@ class MainWindow(QMainWindow):
         self.current_database = self.UI_Log.database
         print("password passed {}".format(self.current_password))
         print("database passed {}".format(self.current_database))
+        self.reload_database()
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

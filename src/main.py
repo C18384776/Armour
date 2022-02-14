@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
 
         self.current_password = None
         self.current_database = None
+        self.current_selected_group = None
 
     def testing(self):
         print(self.UI_Log.master_password)
@@ -37,8 +38,15 @@ class MainWindow(QMainWindow):
             file.write(self.current_database)
             file.close()
 
-        con = database.make_connection("/tmp/armour.db")
+        self.con = database.make_connection("/tmp/armour.db")
 
+        self.cur = self.con.cursor()
+        self.cur.execute("SELECT * FROM groups")
+        groups = self.cur.fetchall()
+
+        for group in groups:
+            self.ui.listWidget_groups.addItem(group[1])
+            # print(group[1])
 
         # with open("testing.db", 'rb') as file:
         #     file.read()
@@ -64,11 +72,12 @@ class MainWindow(QMainWindow):
         loop.exec()
         print("Login Opened")
         # Assigns current settings.
-        self.current_password = self.UI_Log.master_password
-        self.current_database = self.UI_Log.database
-        print("password passed {}".format(self.current_password))
-        print("database passed {}".format(self.current_database))
-        self.reload_database()
+        if self.UI_Log.master_password is not None:
+            self.current_password = self.UI_Log.master_password
+            self.current_database = self.UI_Log.database
+            print("password passed {}".format(self.current_password))
+            print("database passed {}".format(self.current_database))
+            self.reload_database()
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:
@@ -85,10 +94,21 @@ class MainWindow(QMainWindow):
                 menu_select = menu.exec(event.globalPos())
 
                 if menu_select == new_group:
+                    print(source.itemAt(event.pos()))
                     print("new group")
                 elif menu_select == edit_group:
+                    # Make selected item editable.
+                    self.ui.listWidget_groups.itemAt(event.pos()).\
+                        setFlags(self.ui.listWidget_groups.itemAt(event.pos()).flags()
+                                 | QtCore.Qt.ItemIsEditable)
+
+                    # Edit selected item.
+                    self.ui.listWidget_groups.editItem(source.itemAt(event.pos()))
+
+                    print(source.itemAt(event.pos()))
                     print("edit group")
                 elif menu_select == delete_group:
+                    print(source.itemAt(event.pos()))
                     print("Delete group")
                 else:
                     print("user clicked out of group.")
@@ -101,6 +121,7 @@ class MainWindow(QMainWindow):
                 menu_select = menu.exec(event.globalPos())
 
                 if menu_select == new_group:
+                    print(source.itemAt(event.pos()))
                     print("User clicked on new group")
                 print("user clicked on non-group")
 

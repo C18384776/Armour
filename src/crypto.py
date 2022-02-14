@@ -44,11 +44,21 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
                 print("connection made? {}".format(connection))
 
                 if connection is not None:
-                    group_name = ['Social Media']
+                    group_name_sm = ['Social Media']
+                    group_name_bank = ['Bank']
+                    group_name_school = ['School']
+                    group_name_other = ['Other']
+                    group_name_bin = ['Recycle Bin']
+
 
                     database.database_query(connection, sql_create_group_table, None)
                     database.database_query(connection, sql_create_password_table, None)
-                    database.database_query(connection, sql_group_insert, group_name)
+                    database.database_query(connection, sql_group_insert, group_name_sm)
+                    database.database_query(connection, sql_group_insert, group_name_bank)
+                    database.database_query(connection, sql_group_insert, group_name_school)
+                    database.database_query(connection, sql_group_insert, group_name_other)
+                    database.database_query(connection, sql_group_insert, group_name_bin)
+
                     connection.commit()
                     connection.close()
                     print("Database created.")

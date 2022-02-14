@@ -16,32 +16,7 @@
   <widget class="QWidget" name="horizontal_table_layout">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,4">
     <item>
-     <widget class="QListWidget" name="listWidget_groups">
-      <item>
-       <property name="text">
-        <string>Test 1</string>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Test 2</string>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Test 3</string>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
-       </property>
-      </item>
-     </widget>
+     <widget class="QListWidget" name="listWidget_groups"/>
     </item>
     <item>
      <widget class="QTableWidget" name="tableWidget_entries"/>
@@ -72,16 +47,31 @@
     <property name="title">
      <string>Entry</string>
     </property>
+    <addaction name="actionNew_Entry"/>
+    <addaction name="actionEdit_Entry"/>
+    <addaction name="actionDelete_Entry"/>
    </widget>
    <widget class="QMenu" name="menuGroups">
     <property name="title">
      <string>Groups</string>
     </property>
+    <addaction name="actionAdd_Group"/>
+    <addaction name="actionEdit_Group"/>
+    <addaction name="actionDelete_Group"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>Tools</string>
     </property>
+    <widget class="QMenu" name="menuTheme">
+     <property name="title">
+      <string>Theme</string>
+     </property>
+     <addaction name="actionLight_Theme"/>
+     <addaction name="actionDark_Theme"/>
+    </widget>
+    <addaction name="menuTheme"/>
+    <addaction name="actionOptions"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -107,6 +97,18 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionNew_Database"/>
+   <addaction name="actionOpen_Database"/>
+   <addaction name="actionSave_Database"/>
+   <addaction name="separator"/>
+   <addaction name="actionAdd_Group"/>
+   <addaction name="actionEdit_Group"/>
+   <addaction name="actionDelete_Group"/>
+   <addaction name="separator"/>
+   <addaction name="actionNew_Entry"/>
+   <addaction name="actionEdit_Entry"/>
+   <addaction name="actionDelete_Entry"/>
+   <addaction name="separator"/>
+   <addaction name="actionOptions"/>
   </widget>
   <action name="actionNew_Database">
    <property name="icon">
@@ -160,6 +162,79 @@
    </property>
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionAdd_Group">
+   <property name="icon">
+    <iconset resource="../src/resources.qrc">
+     <normaloff>:/document/icons/Document/folder-add-line.svg</normaloff>:/document/icons/Document/folder-add-line.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Group</string>
+   </property>
+  </action>
+  <action name="actionEdit_Group">
+   <property name="icon">
+    <iconset resource="../src/resources.qrc">
+     <normaloff>:/document/icons/Document/folder-line.svg</normaloff>:/document/icons/Document/folder-line.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Group</string>
+   </property>
+  </action>
+  <action name="actionDelete_Group">
+   <property name="icon">
+    <iconset resource="../src/resources.qrc">
+     <normaloff>:/document/icons/Document/folder-zip-line.svg</normaloff>:/document/icons/Document/folder-zip-line.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Group</string>
+   </property>
+  </action>
+  <action name="actionNew_Entry">
+   <property name="icon">
+    <iconset resource="../src/resources.qrc">
+     <normaloff>:/system/icons/System/add-box-line.svg</normaloff>:/system/icons/System/add-box-line.svg</iconset>
+   </property>
+   <property name="text">
+    <string>New Entry</string>
+   </property>
+  </action>
+  <action name="actionEdit_Entry">
+   <property name="icon">
+    <iconset resource="../src/resources.qrc">
+     <normaloff>:/system/icons/System/checkbox-blank-line.svg</normaloff>:/system/icons/System/checkbox-blank-line.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Entry</string>
+   </property>
+  </action>
+  <action name="actionDelete_Entry">
+   <property name="icon">
+    <iconset resource="../src/resources.qrc">
+     <normaloff>:/system/icons/System/checkbox-indeterminate-line.svg</normaloff>:/system/icons/System/checkbox-indeterminate-line.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Entry</string>
+   </property>
+  </action>
+  <action name="actionOptions">
+   <property name="icon">
+    <iconset resource="../src/resources.qrc">
+     <normaloff>:/document/icons/Document/file-settings-line.svg</normaloff>:/document/icons/Document/file-settings-line.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Options</string>
+   </property>
+  </action>
+  <action name="actionLight_Theme">
+   <property name="text">
+    <string>Light Theme</string>
+   </property>
+  </action>
+  <action name="actionDark_Theme">
+   <property name="text">
+    <string>Dark Theme</string>
    </property>
   </action>
  </widget>

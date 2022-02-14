@@ -150,18 +150,21 @@ class UiLogin(object):
             Login.close()
 
     def login(self):
-        self.master_password, self.database = \
-            crypto.login(error_checking.check_fields(self.directory_edit,
-                                                     self.directory_warning,
-                                                     self.password_edit,
-                                                     self.password_warning,
-                                                     self.expert_checkBox.isChecked(),
-                                                     self.secret_edit,
-                                                     self.secret_warning),
-                         self.expert_checkBox.isChecked(),
-                         self.secret_edit,
-                         self.password_edit,
-                         self.directory_edit)
+        try:
+            self.master_password, self.database = \
+                crypto.login(error_checking.check_fields(self.directory_edit,
+                                                         self.directory_warning,
+                                                         self.password_edit,
+                                                         self.password_warning,
+                                                         self.expert_checkBox.isChecked(),
+                                                         self.secret_edit,
+                                                         self.secret_warning),
+                             self.expert_checkBox.isChecked(),
+                             self.secret_edit,
+                             self.password_edit,
+                             self.directory_edit)
+        except:
+            pass
 
     def update_if_field_nonempty(self):
         if self.password_edit.text() == '':

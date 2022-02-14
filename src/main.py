@@ -43,11 +43,17 @@ class MainWindow(QMainWindow):
         self.UI_Log.setup_ui_login(self.login_window)
         self.login_window.show()
         loop = QEventLoop()
-        # self.login_window.destroyed.connect(loop.quit)
-        self.login_window.
+        # By default, login is hidden on close()
+        # This attribute makes it destroyed.
+        self.login_window.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        self.login_window.destroyed.connect(loop.quit)
         loop.exec()
         print("Login Opened")
-        print("Data passed {}".format(self.UI_Log.master_password))
+        # Assigns current settings.
+        self.current_password = self.UI_Log.master_password
+        self.current_database = self.UI_Log.database
+        print("password passed {}".format(self.current_password))
+        print("database passed {}".format(self.current_database))
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

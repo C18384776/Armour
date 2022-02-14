@@ -189,12 +189,12 @@ class UiLogin(object):
         self.login_button.setText(_translate("Login", "Login"))
 
 
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    Login = QtWidgets.QWidget()
-    ui = UiLogin()
-    ui.setup_ui_login(Login)
-    Login.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     import sys
+#
+#     app = QtWidgets.QApplication(sys.argv)
+#     Login = QtWidgets.QWidget()
+#     ui = UiLogin()
+#     ui.setup_ui_login(Login)
+#     Login.show()
+#     sys.exit(app.exec_())

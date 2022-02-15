@@ -24,10 +24,15 @@ class MainWindow(QMainWindow):
 
         self.ui.actionAbout.triggered.connect(lambda: self.testing())
 
+        self.ui.listWidget_groups.itemClicked.connect(self.group_clicked)
+
         self.current_password = None
         self.current_database = None
         self.current_selected_group = None
         self.con = None
+
+    def group_clicked(self, item):
+        print("Clicked: {}".format(item.text()))
 
     def testing(self):
         print(self.UI_Log.master_password)

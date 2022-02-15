@@ -22,7 +22,9 @@ class MainWindow(QMainWindow):
         self.ui.actionNew_Database.triggered.connect(lambda: self.new_database_clicked())
         self.ui.actionOpen_Database.triggered.connect(lambda: self.open_database_clicked())
 
-        self.ui.tableWidget_entries.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        self.ui.tableWidget_entries.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.ui.tableWidget_entries.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        self.ui.tableWidget_entries.verticalHeader().setVisible(False)
 
         self.current_password = None
         self.current_database = None

@@ -19,6 +19,8 @@ class MainWindow(QMainWindow):
         self.ui.listWidget_groups.installEventFilter(self)
         self.ui.listWidget_groups.itemClicked.connect(self.group_clicked)
 
+        self.ui.tableWidget_entries.installEventFilter(self)
+
         self.ui.actionNew_Database.triggered.connect(lambda: self.new_database_clicked())
         self.ui.actionOpen_Database.triggered.connect(lambda: self.open_database_clicked())
 
@@ -174,7 +176,64 @@ class MainWindow(QMainWindow):
             self.con.commit()
             self.reload_database()
 
+    def delete_entry(self):
+        print("in delete entry method with ")
+
     def eventFilter(self, source, event):
+        # Event filter for QTableWidget
+        if event.type() == QEvent.ContextMenu and source is self.ui.tableWidget_entries:
+            menu = QtWidgets.QMenu()
+            copy_username = QAction("Copy Username")
+            copy_password = QAction("Copy Password")
+            copy_totp = QAction("Copy TOTP")
+            new_entry = QAction("New Entry")
+            edit_entry = QAction("Edit Entry")
+            delete_entry = QAction("Delete Entry")
+            open_url = QAction("Open Website")
+
+            menu.addAction(copy_username)
+            menu.addAction(copy_password)
+            menu.addAction(copy_totp)
+            menu.addSeparator()
+            menu.addAction(new_entry)
+            menu.addAction(edit_entry)
+            menu.addAction(delete_entry)
+            menu.addSeparator()
+            menu.addAction(open_url)
+
+            if source.itemAt(event.pos()):
+                print(source.itemAt(event.pos()).text())
+                menu_select = menu.exec(event.globalPos())
+                if menu_select == copy_username:
+                    pass
+                if menu_select == copy_password:
+                    pass
+                if menu_select == copy_totp:
+                    pass
+                if menu_select == new_entry:
+                    pass
+                if menu_select == edit_entry:
+                    pass
+                if menu_select == delete_entry:
+                    self.delete_entry()
+                if menu_select == open_url:
+                    pass
+                else:
+                    print("user clicked out of group.")
+
+                return True
+            # User right clicks empty space.
+            else:
+                menu.clear()
+                menu.addAction(new_entry)
+                menu_select = menu.exec(event.globalPos())
+
+                if menu_select == new_entry:
+                    pass
+
+                return True
+
+        # Event filter for QListWidget
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:
             menu = QtWidgets.QMenu()
             new_group = QAction("New Group")

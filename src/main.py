@@ -32,7 +32,9 @@ class MainWindow(QMainWindow):
         self.con = None
 
     def group_clicked(self, item):
+        self.current_selected_group = item.text()
         print("Clicked: {}".format(item.text()))
+        self.reload_database()
 
     def testing(self):
         print(self.UI_Log.master_password)
@@ -48,6 +50,8 @@ class MainWindow(QMainWindow):
         ### Need to close database connection someday.
 
     def reload_database(self):
+        id_of_groups_password_entries = 1
+
         # If database not loaded in.
         if self.con is None:
             self.open_database()
@@ -57,19 +61,19 @@ class MainWindow(QMainWindow):
         self.cur = self.con.cursor()
         self.cur.execute("SELECT * FROM groups")
         groups = self.cur.fetchall()
-
+        print(groups)
         # Clear groups before import
         self.ui.listWidget_groups.clear()
         for group in groups:
+            if group[1] == self.current_selected_group:
+                id_of_groups_password_entries = group[0]
             self.ui.listWidget_groups.addItem(group[1])
             # print(group[1])
 
-        # with open("testing.db", 'rb') as file:
-        #     file.read()
-        #     print(file.read())
-
-        self.cur.execute("SELECT * FROM passwords WHERE groupId = (?)", [1])
+        print("id of group pass entry: {}".format(id_of_groups_password_entries))
+        self.cur.execute("SELECT * FROM passwords WHERE groupId = (?)", [id_of_groups_password_entries])
         entries = self.cur.fetchall()
+
         # (Re)load password entries for specific selected group.
         self.ui.tableWidget_entries.setRowCount(len(entries))
         print(entries)

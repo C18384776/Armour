@@ -33,6 +33,11 @@ class MainWindow(QMainWindow):
         self.current_selected_group = None
         self.con = None
 
+        # Hides password & 2FA columns
+        self.password_hide_column = PasswordHide()
+        self.ui.tableWidget_entries.setItemDelegateForColumn(3, self.password_hide_column)
+        self.ui.tableWidget_entries.setItemDelegateForColumn(6, self.password_hide_column)
+
     def group_clicked(self, item):
         self.current_selected_group = item.text()
         print("Clicked: {}".format(item.text()))
@@ -49,7 +54,7 @@ class MainWindow(QMainWindow):
             file.close()
 
         self.con = database.make_connection("/tmp/armour.db")
-        ### Need to close database connection someday.
+        # Need to close database connection someday.
 
     def reload_database(self):
         id_of_groups_password_entries = 1
@@ -135,7 +140,10 @@ class MainWindow(QMainWindow):
     def edit_group(self, edit_group_location, group_to_edit):
         print("in edit group with {}".format(group_to_edit))
         if group_to_edit is not None:
-            text, submit = QInputDialog.getText(self, "Edit a group", "Edit group name", QLineEdit.Normal, group_to_edit)
+            text, submit = QInputDialog.getText(self,
+                                                "Edit a group", "Edit group name",
+                                                QLineEdit.Normal,
+                                                group_to_edit)
 
             # Query checks if exact name already exists.
             self.cur.execute("SELECT groupName FROM groups WHERE groupName = (?)", [text])
@@ -165,7 +173,6 @@ class MainWindow(QMainWindow):
             database.database_query(self.con, sql_group_delete, delete_group_name)
             self.con.commit()
             self.reload_database()
-
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:
@@ -207,6 +214,14 @@ class MainWindow(QMainWindow):
                 return True
 
         return super(MainWindow, self).eventFilter(source, event)
+
+
+class PasswordHide(QtWidgets.QStyledItemDelegate):
+    def initStyleOption(self, option, index):
+        super().initStyleOption(option, index)
+        style = option.widget.style() or QtWidgets.QApplication.style()
+        hint = style.styleHint(QtWidgets.QStyle.SH_LineEdit_PasswordCharacter)
+        option.text = chr(hint) * len(option.text)
 
 
 if __name__ == "__main__":

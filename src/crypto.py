@@ -3,7 +3,7 @@ import pyAesCrypt
 import hash
 import database
 import warn
-
+import datetime
 
 def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret_edit, password_edit):
     # Function checks if fields are entered.
@@ -33,12 +33,20 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
                 sql_create_password_table = """
                                         CREATE TABLE IF NOT EXISTS passwords (
                                             passwordId INTEGER PRIMARY KEY,
+                                            passwordWebsite text,
                                             passwordName text,
-                                            passwordPassword NOT NULL,
+                                            passwordPassword text NOT NULL,
+                                            passwordUrl text,
+                                            passwordCreation timestamp,
+                                            password2FA text,
                                             groupId integer NOT NULL,
                                             FOREIGN KEY (groupId) REFERENCES groups(groupId));"""
 
                 sql_group_insert = """INSERT INTO groups(groupName) VALUES(?)"""
+
+                sql_entry_insert = """INSERT INTO passwords( passwordWebsite, 
+                passwordName, passwordPassword, passwordUrl, 
+                passwordCreation, password2FA, groupId) VALUES(?,?,?,?,?,?,?)"""
 
                 connection = database.make_connection(database_save_path)
                 print("connection made? {}".format(connection))
@@ -50,6 +58,17 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
                     group_name_other = ['Other']
                     group_name_bin = ['Recycle Bin']
 
+                    pass_entry_one = ['Facebook', 'Declan', 'password1',
+                                      'www.facebook.com', datetime.datetime.now(),
+                                      '123456', 1]
+
+                    pass_entry_two = ['Twitter', 'Declan', 'password2',
+                                      'www.twitter.com', datetime.datetime.now(),
+                                      '123456', 1]
+
+                    pass_entry_three = ['AIB', 'Declan', 'password3',
+                                      'www.aib.ie', datetime.datetime.now(),
+                                      '123456', 2]
 
                     database.database_query(connection, sql_create_group_table, None)
                     database.database_query(connection, sql_create_password_table, None)
@@ -58,6 +77,9 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
                     database.database_query(connection, sql_group_insert, group_name_school)
                     database.database_query(connection, sql_group_insert, group_name_other)
                     database.database_query(connection, sql_group_insert, group_name_bin)
+                    database.database_query(connection, sql_entry_insert, pass_entry_one)
+                    database.database_query(connection, sql_entry_insert, pass_entry_two)
+                    database.database_query(connection, sql_entry_insert, pass_entry_three)
 
                     connection.commit()
                     connection.close()

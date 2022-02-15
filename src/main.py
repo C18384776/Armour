@@ -17,14 +17,12 @@ class MainWindow(QMainWindow):
         self.show()
 
         self.ui.listWidget_groups.installEventFilter(self)
+        self.ui.listWidget_groups.itemClicked.connect(self.group_clicked)
 
         self.ui.actionNew_Database.triggered.connect(lambda: self.new_database_clicked())
-
         self.ui.actionOpen_Database.triggered.connect(lambda: self.open_database_clicked())
 
-        self.ui.actionAbout.triggered.connect(lambda: self.testing())
-
-        self.ui.listWidget_groups.itemClicked.connect(self.group_clicked)
+        self.ui.tableWidget_entries.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
         self.current_password = None
         self.current_database = None
@@ -51,15 +49,15 @@ class MainWindow(QMainWindow):
         # If database not loaded in.
         if self.con is None:
             self.open_database()
-            print("CONNECTION NOT HAPPENED")
+            print("CONNECTION HAPPENED")
 
+        # (Re)load groups
         self.cur = self.con.cursor()
         self.cur.execute("SELECT * FROM groups")
         groups = self.cur.fetchall()
 
         # Clear groups before import
         self.ui.listWidget_groups.clear()
-
         for group in groups:
             self.ui.listWidget_groups.addItem(group[1])
             # print(group[1])
@@ -67,6 +65,21 @@ class MainWindow(QMainWindow):
         # with open("testing.db", 'rb') as file:
         #     file.read()
         #     print(file.read())
+
+        self.cur.execute("SELECT * FROM passwords WHERE groupId = (?)", [1])
+        entries = self.cur.fetchall()
+        # (Re)load password entries for specific selected group.
+        self.ui.tableWidget_entries.setRowCount(len(entries))
+        print(entries)
+        row = 0
+        for entry in entries:
+            self.ui.tableWidget_entries.setItem(row, 0, QtWidgets.QTableWidgetItem(str(entry[1])))
+            self.ui.tableWidget_entries.setItem(row, 1, QtWidgets.QTableWidgetItem(str(entry[2])))
+            self.ui.tableWidget_entries.setItem(row, 2, QtWidgets.QTableWidgetItem(str(entry[3])))
+            self.ui.tableWidget_entries.setItem(row, 3, QtWidgets.QTableWidgetItem(str(entry[4])))
+            self.ui.tableWidget_entries.setItem(row, 4, QtWidgets.QTableWidgetItem(str(entry[5])))
+            self.ui.tableWidget_entries.setItem(row, 5, QtWidgets.QTableWidgetItem(str(entry[6])))
+            row += 1
 
     def new_database_clicked(self):
         self.reg_window = QtWidgets.QWidget()

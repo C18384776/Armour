@@ -19,8 +19,8 @@ class MainWindow(QMainWindow):
         self.ui.listWidget_groups.installEventFilter(self)
         self.ui.listWidget_groups.itemClicked.connect(self.group_clicked)
 
-        self.ui.tableWidget_entries.installEventFilter(self)
-        self.ui.tableWidget_entries.itemClicked.connect(self.item_clicked_in_table)
+        # self.ui.tableWidget_entries.itemClicked.connect(self.item_clicked_in_table)
+        self.ui.tableWidget_entries.viewport().installEventFilter(self)
 
         self.ui.actionNew_Database.triggered.connect(lambda: self.new_database_clicked())
         self.ui.actionOpen_Database.triggered.connect(lambda: self.open_database_clicked())
@@ -41,19 +41,15 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_entries.setItemDelegateForColumn(3, self.password_hide_column)
         self.ui.tableWidget_entries.setItemDelegateForColumn(6, self.password_hide_column)
 
-    # Gets current selected item and prints its row.
-    def item_clicked_in_table(self, item):
-        print(item.text())
-        print(self.ui.tableWidget_entries.row(item))
+    # Gets current selected item and prints its row. - Delete later when left click implemented in eventFilter
+    # def item_clicked_in_table(self, item):
+    #     print(item.text())
+    #     print(self.ui.tableWidget_entries.row(item))
 
     def group_clicked(self, item):
         self.current_selected_group = item.text()
         print("Clicked: {}".format(item.text()))
         self.reload_database()
-
-    def testing(self):
-        print(self.UI_Log.master_password)
-        print(self.UI_Log.database)
 
     def open_database(self):
         # Do windows later...
@@ -187,57 +183,66 @@ class MainWindow(QMainWindow):
 
     def eventFilter(self, source, event):
         # Event filter for QTableWidget
-        if event.type() == QEvent.ContextMenu and source is self.ui.tableWidget_entries:
-            menu = QtWidgets.QMenu()
-            copy_username = QAction("Copy Username")
-            copy_password = QAction("Copy Password")
-            copy_totp = QAction("Copy TOTP")
-            new_entry = QAction("New Entry")
-            edit_entry = QAction("Edit Entry")
-            delete_entry = QAction("Delete Entry")
-            open_url = QAction("Open Website")
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if event.button() == QtCore.Qt.RightButton:
+                print("Right Button Pressed")
+                index = self.ui.tableWidget_entries.indexAt(event.pos())
+                print(index.data())
 
-            menu.addAction(copy_username)
-            menu.addAction(copy_password)
-            menu.addAction(copy_totp)
-            menu.addSeparator()
-            menu.addAction(new_entry)
-            menu.addAction(edit_entry)
-            menu.addAction(delete_entry)
-            menu.addSeparator()
-            menu.addAction(open_url)
+                menu = QtWidgets.QMenu()
+                copy_username = QAction("Copy Username")
+                copy_password = QAction("Copy Password")
+                copy_totp = QAction("Copy TOTP")
+                new_entry = QAction("New Entry")
+                edit_entry = QAction("Edit Entry")
+                delete_entry = QAction("Delete Entry")
+                open_url = QAction("Open Website")
 
-            if source.itemAt(event.pos()):
-                print(source.itemAt(event.pos()).text())
-                menu_select = menu.exec(event.globalPos())
-                if menu_select == copy_username:
-                    pass
-                if menu_select == copy_password:
-                    pass
-                if menu_select == copy_totp:
-                    pass
-                if menu_select == new_entry:
-                    pass
-                if menu_select == edit_entry:
-                    pass
-                if menu_select == delete_entry:
-                    self.delete_entry()
-                if menu_select == open_url:
-                    pass
-                else:
-                    print("user clicked out of group.")
-
-                return True
-            # User right clicks empty space.
-            else:
-                menu.clear()
+                menu.addAction(copy_username)
+                menu.addAction(copy_password)
+                menu.addAction(copy_totp)
+                menu.addSeparator()
                 menu.addAction(new_entry)
-                menu_select = menu.exec(event.globalPos())
+                menu.addAction(edit_entry)
+                menu.addAction(delete_entry)
+                menu.addSeparator()
+                menu.addAction(open_url)
 
-                if menu_select == new_entry:
-                    pass
+                if index.data() is not None:
+                    print(index.data())
+                    menu_select = menu.exec(event.globalPos())
+                    if menu_select == copy_username:
+                        pass
+                    if menu_select == copy_password:
+                        pass
+                    if menu_select == copy_totp:
+                        pass
+                    if menu_select == new_entry:
+                        pass
+                    if menu_select == edit_entry:
+                        pass
+                    if menu_select == delete_entry:
+                        self.delete_entry()
+                    if menu_select == open_url:
+                        pass
+                    else:
+                        print("user clicked out of group.")
 
-                return True
+                    return True
+                # User right clicks empty space.
+                else:
+                    menu.clear()
+                    menu.addAction(new_entry)
+                    menu_select = menu.exec(event.globalPos())
+
+                    if menu_select == new_entry:
+                        pass
+
+                    return True
+            elif event.button() == QtCore.Qt.LeftButton:
+                index = self.ui.tableWidget_entries.indexAt(event.pos())
+                print(index.data())
+                print("Left button pressed")
 
         # Event filter for QListWidget
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

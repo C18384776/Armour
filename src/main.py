@@ -8,6 +8,7 @@ from registration import UiRegistration
 from login import UiLogin
 import database
 import group_widget
+import table_widget
 
 
 class MainWindow(QMainWindow):
@@ -126,98 +127,12 @@ class MainWindow(QMainWindow):
             print("database passed {}".format(self.current_database))
             self.reload_database()
 
-    def delete_entry(self, row_to_delete, id_of_entry, group_id_of_entry):
-        print("in delete entry method with {} {} {}".format(row_to_delete, id_of_entry, group_id_of_entry))
-
-        reply = QMessageBox.question(self, "Remove a group",
-                                     "Do you really want to remove this entry?\n"
-                                     "It will be moved to the Recycle Bin or delete entirely "
-                                     "if it's there already.",
-                                     QMessageBox.Yes | QMessageBox.No)
-
-        # Move to recycle bin if not in it already; otherwise delete forever.
-        if reply == QMessageBox.Yes and int(group_id_of_entry) != 5:
-            print("Inside move to recycle")
-            sql_entry_move_to_bin = """UPDATE passwords SET groupId = 5 WHERE passwordId = (?)"""
-            database.database_query(self.con, sql_entry_move_to_bin, [id_of_entry])
-            self.con.commit()
-            self.reload_database()
-        elif reply == QMessageBox.Yes and int(group_id_of_entry) == 5:
-            print("Inside recycle delete")
-            sql_delete_entry = """DELETE FROM passwords WHERE passwordId = (?)"""
-            database.database_query(self.con, sql_delete_entry, [id_of_entry])
-            self.con.commit()
-            self.reload_database()
-
     def eventFilter(self, source, event):
         # Event filter for QTableWidget
         if event.type() == QtCore.QEvent.MouseButtonPress:
-            if event.button() == QtCore.Qt.RightButton:
-                print("Right Button Pressed")
-                index = self.ui.tableWidget_entries.indexAt(event.pos())
-                # Display content of cell
-                print(index.data())
-
-                menu = QtWidgets.QMenu()
-                copy_username = QAction("Copy Username")
-                copy_password = QAction("Copy Password")
-                copy_totp = QAction("Copy TOTP")
-                new_entry = QAction("New Entry")
-                edit_entry = QAction("Edit Entry")
-                delete_entry = QAction("Delete Entry")
-                open_url = QAction("Open Website")
-
-                menu.addAction(copy_username)
-                menu.addAction(copy_password)
-                menu.addAction(copy_totp)
-                menu.addSeparator()
-                menu.addAction(new_entry)
-                menu.addAction(edit_entry)
-                menu.addAction(delete_entry)
-                menu.addSeparator()
-                menu.addAction(open_url)
-
-                if index.data() is not None:
-                    print(index.data())
-                    menu_select = menu.exec(event.globalPos())
-                    if menu_select == copy_username:
-                        pass
-                    if menu_select == copy_password:
-                        pass
-                    if menu_select == copy_totp:
-                        pass
-                    if menu_select == new_entry:
-                        pass
-                    if menu_select == edit_entry:
-                        pass
-                    if menu_select == delete_entry:
-                        # Selected row to delete.
-                        row_to_remove = index.row()
-                        # Selected row ID from database.
-                        id_of_entry = self.ui.tableWidget_entries.item(row_to_remove, 0)
-                        # Selected row group ID from database.
-                        group_id_of_entry = self.ui.tableWidget_entries.item(row_to_remove, 7)
-                        self.delete_entry(index.row(), id_of_entry.text(), group_id_of_entry.text())
-                    if menu_select == open_url:
-                        pass
-                    else:
-                        print("user clicked out of group.")
-
-                    return True
-                # User right clicks empty space.
-                else:
-                    menu.clear()
-                    menu.addAction(new_entry)
-                    menu_select = menu.exec(event.globalPos())
-
-                    if menu_select == new_entry:
-                        pass
-
-                    return True
-            elif event.button() == QtCore.Qt.LeftButton:
-                index = self.ui.tableWidget_entries.indexAt(event.pos())
-                print(index.data())
-                print("Left button pressed")
+            success = table_widget.table_widget(source, event, self.ui.tableWidget_entries, self, self.con)
+            if success is True:
+                self.reload_database()
 
         # Event filter for QListWidget
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

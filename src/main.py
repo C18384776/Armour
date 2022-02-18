@@ -29,6 +29,7 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_entries.verticalHeader().setVisible(False)
         self.ui.tableWidget_entries.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.ui.tableWidget_entries.setColumnHidden(0, True)
+        self.ui.tableWidget_entries.setColumnHidden(7, True)
 
         # User password that will be used to re-encrypt database (ie: save)
         self.current_password = None
@@ -94,6 +95,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_entries.setItem(row, 4, QtWidgets.QTableWidgetItem(str(entry[4])))
             self.ui.tableWidget_entries.setItem(row, 5, QtWidgets.QTableWidgetItem(str(entry[5])))
             self.ui.tableWidget_entries.setItem(row, 6, QtWidgets.QTableWidgetItem(str(entry[6])))
+            self.ui.tableWidget_entries.setItem(row, 7, QtWidgets.QTableWidgetItem(str(entry[7])))
             row += 1
 
     def new_database_clicked(self):
@@ -163,8 +165,9 @@ class MainWindow(QMainWindow):
         print("in delete group method with {}".format(group_to_delete))
 
         reply = QMessageBox.question(self, "Remove a group",
-                                     "Do you really want to remove the group " + str(group_to_delete) + "?",
-                                     QMessageBox.Yes | QMessageBox.No)
+                                     "Do you really want to remove the group " +
+                                     str(group_to_delete) +
+                                     "?", QMessageBox.Yes | QMessageBox.No)
 
         if reply == QMessageBox.Yes and group_to_delete != "Recycle Bin":
             row = self.ui.listWidget_groups.row(delete_group_location)
@@ -175,8 +178,28 @@ class MainWindow(QMainWindow):
             self.con.commit()
             self.reload_database()
 
-    def delete_entry(self):
-        print("in delete entry method with ")
+    def delete_entry(self, row_to_delete, id_of_entry, group_id_of_entry):
+        print("in delete entry method with {} {} {}".format(row_to_delete, id_of_entry, group_id_of_entry))
+
+        reply = QMessageBox.question(self, "Remove a group",
+                                     "Do you really want to remove this entry?\n"
+                                     "It will be moved to the Recycle Bin or delete entirely "
+                                     "if it's there already.",
+                                     QMessageBox.Yes | QMessageBox.No)
+
+        # Move to recycle bin if not in it already; otherwise delete forever.
+        if reply == QMessageBox.Yes and int(group_id_of_entry) != 5:
+            print("Inside move to recycle")
+            sql_entry_move_to_bin = """UPDATE passwords SET groupId = 5 WHERE passwordId = (?)"""
+            database.database_query(self.con, sql_entry_move_to_bin, [id_of_entry])
+            self.con.commit()
+            self.reload_database()
+        elif reply == QMessageBox.Yes and int(group_id_of_entry) == 5:
+            print("Inside recycle delete")
+            sql_delete_entry = """DELETE FROM passwords WHERE passwordId = (?)"""
+            database.database_query(self.con, sql_delete_entry, [id_of_entry])
+            self.con.commit()
+            self.reload_database()
 
     def eventFilter(self, source, event):
         # Event filter for QTableWidget
@@ -184,8 +207,7 @@ class MainWindow(QMainWindow):
             if event.button() == QtCore.Qt.RightButton:
                 print("Right Button Pressed")
                 index = self.ui.tableWidget_entries.indexAt(event.pos())
-                # print(self.ui.tableWidget_entries.itemClicked.row())
-                print(index.row())
+                # Display content of cell
                 print(index.data())
 
                 menu = QtWidgets.QMenu()
@@ -221,7 +243,13 @@ class MainWindow(QMainWindow):
                     if menu_select == edit_entry:
                         pass
                     if menu_select == delete_entry:
-                        self.delete_entry()
+                        # Selected row to delete.
+                        row_to_remove = index.row()
+                        # Selected row ID from database.
+                        id_of_entry = self.ui.tableWidget_entries.item(row_to_remove, 0)
+                        # Selected row group ID from database.
+                        group_id_of_entry = self.ui.tableWidget_entries.item(row_to_remove, 7)
+                        self.delete_entry(index.row(), id_of_entry.text(), group_id_of_entry.text())
                     if menu_select == open_url:
                         pass
                     else:

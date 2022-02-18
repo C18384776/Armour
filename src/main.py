@@ -19,7 +19,6 @@ class MainWindow(QMainWindow):
         self.ui.listWidget_groups.installEventFilter(self)
         self.ui.listWidget_groups.itemClicked.connect(self.group_clicked)
 
-        # self.ui.tableWidget_entries.itemClicked.connect(self.item_clicked_in_table)
         self.ui.tableWidget_entries.viewport().installEventFilter(self)
 
         self.ui.actionNew_Database.triggered.connect(lambda: self.new_database_clicked())
@@ -31,7 +30,10 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_entries.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.ui.tableWidget_entries.setColumnHidden(0, True)
 
+        # User password that will be used to re-encrypt database (ie: save)
         self.current_password = None
+
+        #
         self.current_database = None
         self.current_selected_group = None
         self.con = None
@@ -40,11 +42,6 @@ class MainWindow(QMainWindow):
         self.password_hide_column = PasswordHide()
         self.ui.tableWidget_entries.setItemDelegateForColumn(3, self.password_hide_column)
         self.ui.tableWidget_entries.setItemDelegateForColumn(6, self.password_hide_column)
-
-    # Gets current selected item and prints its row. - Delete later when left click implemented in eventFilter
-    # def item_clicked_in_table(self, item):
-    #     print(item.text())
-    #     print(self.ui.tableWidget_entries.row(item))
 
     def group_clicked(self, item):
         self.current_selected_group = item.text()
@@ -187,6 +184,8 @@ class MainWindow(QMainWindow):
             if event.button() == QtCore.Qt.RightButton:
                 print("Right Button Pressed")
                 index = self.ui.tableWidget_entries.indexAt(event.pos())
+                # print(self.ui.tableWidget_entries.itemClicked.row())
+                print(index.row())
                 print(index.data())
 
                 menu = QtWidgets.QMenu()

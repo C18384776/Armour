@@ -14,8 +14,8 @@ class Entry(QtWidgets.QWidget):
         self.ui.cancel_button.clicked.connect(Entry.close)
 
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    window = Entry()
-    window.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     app = QtWidgets.QApplication(sys.argv)
+#     window = Entry()
+#     window.show()
+#     sys.exit(app.exec_())

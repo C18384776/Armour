@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QAction, QMessageBox
 import database
+from entry import Entry
 
 
 def table_widget(source, event, table_wid, main_window, connection):
@@ -39,7 +40,7 @@ def table_widget(source, event, table_wid, main_window, connection):
             if menu_select == copy_totp_action:
                 pass
             if menu_select == new_entry_action:
-                pass
+                new_entry()
             if menu_select == edit_entry_action:
                 pass
             if menu_select == delete_entry_action:
@@ -70,6 +71,12 @@ def table_widget(source, event, table_wid, main_window, connection):
         index = table_wid.indexAt(event.pos())
         print(index.data())
         print("Left button pressed")
+
+
+def new_entry():
+    UI_entry = Entry()
+    UI_entry.__init__()
+    print("New entry window opened")
 
 
 def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, connection):

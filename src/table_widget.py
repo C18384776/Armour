@@ -83,6 +83,8 @@ def new_entry():
     password = UI_entry.password
     url = UI_entry.url
     twofa = UI_entry.twofa
+    submitted_info = UI_entry.submitted_info
+    UI_entry.show()
     loop = QEventLoop()
     # By default, login is hidden on close()
     # This attribute makes it destroyed.
@@ -90,7 +92,12 @@ def new_entry():
     UI_entry.destroyed.connect(loop.quit)
     loop.exec()
     print("New entry window opened")
-    return [website, username, password, url, twofa]
+
+    # List is only returned if submission button is clicked and valid from New Entry Window.
+    if submitted_info is False:
+        return False
+    else:
+        return [website, username, password, url, twofa]
 
 
 

@@ -1,4 +1,4 @@
-import sys
+# import sys
 
 from PyQt5 import QtWidgets
 from ui_entry import Ui_Entry
@@ -11,7 +11,7 @@ class Entry(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self)
         self.ui = Ui_Entry()
         self.ui.setupUi(self)
-        self.show()
+        # self.show()
 
         self.ui.cancel_button.clicked.connect(self.close)
         self.ui.password_error_label.hide()
@@ -46,11 +46,14 @@ class Entry(QtWidgets.QWidget):
         self.url = ''
         self.twofa = ''
 
+        self.submitted_info = False
+
     def submitted(self):
         fields_complete = self.check_fields()
 
         if not fields_complete:
             print("Ready to submit")
+            self.submitted_info = True
 
     def check_fields(self):
         error = 0
@@ -75,8 +78,8 @@ class Entry(QtWidgets.QWidget):
             self.ui.password_error_label.hide()
 
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    window = Entry()
-    window.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     app = QtWidgets.QApplication(sys.argv)
+#     window = Entry()
+#     window.show()
+#     sys.exit(app.exec_())

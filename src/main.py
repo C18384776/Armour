@@ -133,6 +133,12 @@ class MainWindow(QMainWindow):
             success = table_widget.table_widget(source, event, self.ui.tableWidget_entries, self, self.con)
             if success is True:
                 self.reload_database()
+            elif success is False:
+                print("QTableWidget event has failed.")
+            else:
+                print("Printing QTableWidget add/edit entry:")
+                print(success)
+
 
         # Event filter for QListWidget
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

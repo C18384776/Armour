@@ -1,6 +1,4 @@
 from PyQt5 import QtCore, QtWidgets
-from zxcvbn import zxcvbn
-import math
 import file_explorer
 import error_checking
 import crypto
@@ -135,7 +133,10 @@ class UiRegistration(object):
         self.quit_button.clicked.connect(Registration.close)
 
         # Each key press on password field will call function.
-        self.password_edit.textChanged.connect(lambda: self.update_password_bits())
+        self.password_edit.textChanged.connect(lambda: crypto.update_password_bits(self.password_edit,
+                                                                                   self.password_bits_value,
+                                                                                   self.strength_progress_bar,
+                                                                                   self.password_warning))
 
         # Browse for folder path to save password database file in.
         self.directory_browse_button.clicked.connect(lambda: self.browse_dir())
@@ -178,22 +179,6 @@ class UiRegistration(object):
 
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
-
-    def update_password_bits(self):
-        # Entropy is calculated when text field is not empty.
-        if self.password_edit.text():
-            result = zxcvbn(self.password_edit.text())
-            self.password_bits_value = math.log2(result["guesses"]).__floor__()
-            self.strength_progress_bar.setValue(self.password_bits_value)
-
-            # Hides password warning if a password is typed.
-            if self.password_edit.text():
-                self.password_warning.hide()
-        elif self.password_edit.text() == '':
-            self.strength_progress_bar.setValue(0)
-
-            # User is warned that password cannot be blank.
-            self.password_warning.show()
 
     def browse_dir(self):
         self.dir_path = QtWidgets.QFileDialog.getExistingDirectory()

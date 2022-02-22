@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import QEventLoop
 from PyQt5.QtWidgets import QAction, QMessageBox
 import database
 from entry import Entry
@@ -40,7 +41,8 @@ def table_widget(source, event, table_wid, main_window, connection):
             if menu_select == copy_totp_action:
                 pass
             if menu_select == new_entry_action:
-                new_entry()
+                new_entry_list = new_entry()
+                return new_entry_list
             if menu_select == edit_entry_action:
                 pass
             if menu_select == delete_entry_action:
@@ -76,7 +78,20 @@ def table_widget(source, event, table_wid, main_window, connection):
 def new_entry():
     UI_entry = Entry()
     UI_entry.__init__()
+    website = UI_entry.website
+    username = UI_entry.username
+    password = UI_entry.password
+    url = UI_entry.url
+    twofa = UI_entry.twofa
+    loop = QEventLoop()
+    # By default, login is hidden on close()
+    # This attribute makes it destroyed.
+    UI_entry.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+    UI_entry.destroyed.connect(loop.quit)
+    loop.exec()
     print("New entry window opened")
+    return [website, username, password, url, twofa]
+
 
 
 def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, connection):

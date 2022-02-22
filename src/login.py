@@ -133,8 +133,10 @@ class UiLogin(object):
         # Each key press on password field will call function.
         self.password_edit.textChanged.connect(lambda: self.update_if_field_nonempty())
 
-        self.password_view_button.clicked.connect(lambda: error_checking.view_hide_password(self.password_view_button,
-                                                                                            self.password_edit))
+        self.password_view_button. \
+            clicked.connect(lambda: error_checking.view_hide_password(self.password_view_button,
+                                                                      self.password_edit))
+
         self.login_button.clicked.connect(lambda: self.login())
         self.login_button.clicked.connect(lambda: self.login_close(Login))
 
@@ -190,7 +192,6 @@ class UiLogin(object):
         self.secret_help_button.setText(_translate("Login", "?"))
         self.quit_button.setText(_translate("Login", "Quit"))
         self.login_button.setText(_translate("Login", "Login"))
-
 
 # if __name__ == "__main__":
 #     import sys

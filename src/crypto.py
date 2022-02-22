@@ -1,5 +1,9 @@
 import io
+import math
+
 import pyAesCrypt
+from zxcvbn import zxcvbn
+
 import hash
 import database
 import warn
@@ -158,3 +162,20 @@ def login(check_fields, expert_checkbox, secret_edit, password_edit, directory_e
                 return password, decrypted.getvalue()
         except:
             print("Wrong password?")
+
+
+def update_password_bits(password_edit, password_bits_value, strength_progress_bar, password_warning):
+    # Entropy is calculated when text field is not empty.
+    if password_edit.text():
+        result = zxcvbn(password_edit.text())
+        password_bits_value = math.log2(result["guesses"]).__floor__()
+        strength_progress_bar.setValue(password_bits_value)
+
+        # Hides password warning if a password is typed.
+        if password_edit.text():
+            password_warning.hide()
+    elif password_edit.text() == '':
+        strength_progress_bar.setValue(0)
+
+        # User is warned that password cannot be blank.
+        password_warning.show()

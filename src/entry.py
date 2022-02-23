@@ -24,7 +24,7 @@ class Entry(QtWidgets.QWidget):
                             error_checking.view_hide_password(self.ui.password_view_button,
                                                               self.ui.password_lineEdit))
 
-        self.ui.submit_button.clicked.connect(lambda: self.submitted())
+        # self.ui.submit_button.clicked.connect(lambda: self.submitted())
 
         # Each key press on password field will call function.
         self.ui.password_lineEdit.textChanged.connect(lambda: self.update_if_field_nonempty())
@@ -48,12 +48,22 @@ class Entry(QtWidgets.QWidget):
 
         self.submitted_info = False
 
+    def get_entry_fields(self):
+        return [self.website, self.username, self.password, self.url, self.twofa, self.submitted_info]
+
     def submitted(self):
         fields_complete = self.check_fields()
 
         if not fields_complete:
             print("Ready to submit")
+            self.website = self.ui.website_lineEdit.text()
+            self.username = self.ui.username_lineEdit.text()
+            self.password = self.ui.password_lineEdit.text()
+            self.url = self.ui.url_lineEdit.text()
+            self.twofa = self.ui.twofa_lineEdit.text()
             self.submitted_info = True
+            print("Submitted")
+            self.close()
 
     def check_fields(self):
         error = 0

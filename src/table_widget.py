@@ -78,12 +78,15 @@ def table_widget(source, event, table_wid, main_window, connection):
 def new_entry():
     UI_entry = Entry()
     UI_entry.__init__()
-    website = UI_entry.website
-    username = UI_entry.username
-    password = UI_entry.password
-    url = UI_entry.url
-    twofa = UI_entry.twofa
-    submitted_info = UI_entry.submitted_info
+    # website = UI_entry.website
+    # username = UI_entry.username
+    # password = UI_entry.password
+    # url = UI_entry.url
+    # twofa = UI_entry.twofa
+    # submitted_info = UI_entry.submitted_info
+    # Detect that button was clicked from here and try to pass down variables
+    UI_entry.ui.submit_button.clicked.connect(lambda: UI_entry.submitted())
+    UI_entry.ui.submit_button.clicked.connect(lambda: get_entry_fields(UI_entry))
     UI_entry.show()
     loop = QEventLoop()
     # By default, login is hidden on close()
@@ -92,13 +95,17 @@ def new_entry():
     UI_entry.destroyed.connect(loop.quit)
     loop.exec()
     print("New entry window opened")
-
     # List is only returned if submission button is clicked and valid from New Entry Window.
-    if submitted_info is False:
-        return False
-    else:
-        return [website, username, password, url, twofa]
+    # if  is False:
+    #     return False
+    # else:
+    #     return True  # [website, username, password, url, twofa
 
+
+def get_entry_fields(UI_entry):
+    print("In get entry fields")
+    entry_result = UI_entry.get_entry_fields()
+    print(entry_result)
 
 
 def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, connection):

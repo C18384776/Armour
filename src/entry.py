@@ -11,7 +11,6 @@ class Entry(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self)
         self.ui = Ui_Entry()
         self.ui.setupUi(self)
-        # self.show()
 
         self.ui.cancel_button.clicked.connect(self.close)
         self.ui.password_error_label.hide()
@@ -45,15 +44,28 @@ class Entry(QtWidgets.QWidget):
         self.password = ''
         self.url = ''
         self.twofa = ''
-
         self.submitted_info = False
+
+    def get_text(self, test):
+        self.one = test
+
+    def set_text(self, string):
+        self.one = string
 
     def submitted(self):
         fields_complete = self.check_fields()
 
         if not fields_complete:
             print("Ready to submit")
+            self.website = self.ui.website_lineEdit.text()
+            self.username = self.ui.username_lineEdit.text()
+            self.password = self.ui.password_lineEdit.text()
+            self.url = self.ui.url_lineEdit.text()
+            self.twofa = self.ui.twofa_lineEdit.text()
+            print("Submitted entry")
             self.submitted_info = True
+            self.set_text(self.submitted_info)
+            self.close()
 
     def check_fields(self):
         error = 0
@@ -76,7 +88,6 @@ class Entry(QtWidgets.QWidget):
             self.ui.password_error_label.show()
         else:
             self.ui.password_error_label.hide()
-
 
 # if __name__ == "__main__":
 #     app = QtWidgets.QApplication(sys.argv)

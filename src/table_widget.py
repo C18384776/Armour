@@ -78,9 +78,13 @@ def table_widget(source, event, table_wid, main_window, connection):
 def new_entry():
     UI_entry = Entry()
     UI_entry.__init__()
+    website = UI_entry.website
+    username = UI_entry.username
+    password = UI_entry.password
+    url = UI_entry.url
+    twofa = UI_entry.twofa
+    submitted_info = UI_entry.submitted_info
     UI_entry.show()
-    answer = UI_entry.get_entry_fields()
-    submitted_info = False
     loop = QEventLoop()
     # By default, login is hidden on close()
     # This attribute makes it destroyed.
@@ -88,28 +92,13 @@ def new_entry():
     UI_entry.destroyed.connect(loop.quit)
     loop.exec()
     print("New entry window opened")
-    if answer[5] is False:
-        print("New entry field has not been submitted.")
-        # print(website)
-        # print(username)
-        # print(password)
-        # print(url)
-        # print(twofa)
-        print(answer[0])
-        print(answer[1])
-        print(answer[2])
-        print(answer[3])
-        print(answer[4])
-        print(answer[5])
+
+    # List is only returned if submission button is clicked and valid from New Entry Window.
+    if submitted_info is False:
         return False
     else:
-        print(answer[0])
-        print(answer[1])
-        print(answer[2])
-        print(answer[3])
-        print(answer[4])
-        print(answer[5])
         return [website, username, password, url, twofa]
+
 
 
 def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, connection):

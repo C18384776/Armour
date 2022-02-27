@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import QEvent, QEventLoop
-from PyQt5.QtWidgets import QMainWindow, QApplication, QAction, QInputDialog, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from ui_main import *
 from registration import UiRegistration
@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         # Need to close database connection someday.
 
     def reload_database(self):
-        id_of_groups_password_entries = 1
+        self.id_of_groups_password_entries = 1
 
         # If database not loaded in.
         if self.con is None:
@@ -77,12 +77,11 @@ class MainWindow(QMainWindow):
         self.ui.listWidget_groups.clear()
         for group in groups:
             if group[1] == self.current_selected_group:
-                id_of_groups_password_entries = group[0]
+                self.id_of_groups_password_entries = group[0]
             self.ui.listWidget_groups.addItem(group[1])
-            # print(group[1])
 
-        print("id of group pass entry: {}".format(id_of_groups_password_entries))
-        self.cur.execute("SELECT * FROM passwords WHERE groupId = (?)", [id_of_groups_password_entries])
+        print("id of group pass entry: {}".format(self.id_of_groups_password_entries))
+        self.cur.execute("SELECT * FROM passwords WHERE groupId = (?)", [self.id_of_groups_password_entries])
         entries = self.cur.fetchall()
 
         # (Re)load password entries for specific selected group.
@@ -130,14 +129,16 @@ class MainWindow(QMainWindow):
     def eventFilter(self, source, event):
         # Event filter for QTableWidget
         if event.type() == QtCore.QEvent.MouseButtonPress:
-            success = table_widget.table_widget(source, event, self.ui.tableWidget_entries, self, self.con)
+            success = table_widget.table_widget(source, event, self.ui.tableWidget_entries,
+                                                self, self.con, self.id_of_groups_password_entries)
             if success is True:
                 self.reload_database()
             elif success is False:
                 print("QTableWidget event has closed.")
             else:
-                print("Printing QTableWidget add/edit entry:")
-                print(success)
+                print("No response received in eventFilter() in main.py")
+            #     print("Printing QTableWidget add/edit entry:")
+            #     print(success)
 
         # Event filter for QListWidget
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

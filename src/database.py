@@ -9,7 +9,7 @@ def make_connection(database_save_path):
     :param database_save_path:
     Directory path where SQLite3 database file will be saved.
 
-    :return:
+    :return
     SQLite3 connection from the given path.
     """
     con = None

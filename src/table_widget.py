@@ -1,3 +1,5 @@
+import datetime
+
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QEventLoop
 from PyQt5.QtWidgets import QAction, QMessageBox
@@ -5,7 +7,10 @@ import database
 from entry import Entry
 
 
-def table_widget(source, event, table_wid, main_window, connection):
+global entry_result
+
+
+def table_widget(source, event, table_wid, main_window, connection, id_of_group):
     if event.button() == QtCore.Qt.RightButton:
         print("Right Button Pressed")
         index = table_wid.indexAt(event.pos())
@@ -41,7 +46,7 @@ def table_widget(source, event, table_wid, main_window, connection):
             if menu_select == copy_totp_action:
                 pass
             if menu_select == new_entry_action:
-                new_entry_list = new_entry()
+                new_entry_list = new_entry(id_of_group, connection)
                 return new_entry_list
             if menu_select == edit_entry_action:
                 pass
@@ -66,7 +71,8 @@ def table_widget(source, event, table_wid, main_window, connection):
             menu_select = menu.exec(event.globalPos())
 
             if menu_select == new_entry_action:
-                pass
+                new_entry_list = new_entry(id_of_group, connection)
+                return new_entry_list
 
             return True
     elif event.button() == QtCore.Qt.LeftButton:
@@ -75,15 +81,23 @@ def table_widget(source, event, table_wid, main_window, connection):
         print("Left button pressed")
 
 
-def new_entry():
+def get_entry_fields(UI_entry):
+    print("In get entry fields")
+    result = UI_entry.get_entry_fields()
+    print(result)
+    print(result[0])
+    print(result[1])
+    print(result[2])
+    print(result[3])
+    print(result[4])
+    print(result[5])
+    globals()['entry_result'] = result
+
+
+def new_entry(id_of_group, connection):
     UI_entry = Entry()
     UI_entry.__init__()
-    # website = UI_entry.website
-    # username = UI_entry.username
-    # password = UI_entry.password
-    # url = UI_entry.url
-    # twofa = UI_entry.twofa
-    # submitted_info = UI_entry.submitted_info
+
     # Detect that button was clicked from here and try to pass down variables
     UI_entry.ui.submit_button.clicked.connect(lambda: UI_entry.submitted())
     UI_entry.ui.submit_button.clicked.connect(lambda: get_entry_fields(UI_entry))
@@ -95,17 +109,28 @@ def new_entry():
     UI_entry.destroyed.connect(loop.quit)
     loop.exec()
     print("New entry window opened")
-    # List is only returned if submission button is clicked and valid from New Entry Window.
-    # if  is False:
-    #     return False
-    # else:
-    #     return True  # [website, username, password, url, twofa
-
-
-def get_entry_fields(UI_entry):
-    print("In get entry fields")
-    entry_result = UI_entry.get_entry_fields()
     print(entry_result)
+    # List is only returned if submission button is clicked and valid from New Entry Window.
+    if entry_result[5] is False:
+        return False
+    else:
+        insert_entry(entry_result, id_of_group, connection)
+        return True
+        # return [entry_result[0], entry_result[1], entry_result[2], entry_result[3], entry_result[4]]
+
+
+def insert_entry(entry_result, id_of_group, connection):
+    print("in insert entry method with {}".format(entry_result))
+
+    sql_entry_insert = """INSERT INTO passwords( passwordWebsite, 
+    passwordName, passwordPassword, passwordUrl, 
+    passwordCreation, password2FA, groupId) VALUES(?,?,?,?,?,?,?)"""
+
+    pass_entry_one = [entry_result[0], entry_result[1], entry_result[2],
+                      entry_result[4], datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
+                      entry_result[5], id_of_group]
+    database.database_query(connection, sql_entry_insert, pass_entry_one)
+    connection.commit()
 
 
 def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, connection):

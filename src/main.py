@@ -39,17 +39,26 @@ class MainWindow(QMainWindow):
         #
         self.current_database = None
         self.current_selected_group = None
+        self.current_selected_entry = None
         self.con = None
 
         # Hides password & 2FA columns
         self.password_hide_column = PasswordHide()
         self.ui.tableWidget_entries.setItemDelegateForColumn(3, self.password_hide_column)
         self.ui.tableWidget_entries.setItemDelegateForColumn(6, self.password_hide_column)
+        self.ui.tableWidget_entries.itemClicked.connect(self.table_clicked)
 
     def group_clicked(self, item):
         self.current_selected_group = item.text()
-        print("Clicked: {}".format(item.text()))
+        print("Clicked group: {}".format(item.text()))
         self.reload_database()
+
+    def table_clicked(self, item):
+        self.current_selected_entry = item.text()
+        print("Clicked entry: {}".format(item.text()))
+        print(self.ui.tableWidget_entries.row(item))
+        print(self.ui.tableWidget_entries.item(self.ui.tableWidget_entries.row(item), 3).text())
+        # self.reload_database()
 
     def open_database(self):
         # Do windows later...
@@ -137,8 +146,6 @@ class MainWindow(QMainWindow):
                 print("QTableWidget event has closed.")
             else:
                 print("No response received in eventFilter() in main.py")
-            #     print("Printing QTableWidget add/edit entry:")
-            #     print(success)
 
         # Event filter for QListWidget
         if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:

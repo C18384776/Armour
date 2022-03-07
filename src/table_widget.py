@@ -109,14 +109,17 @@ def new_entry(id_of_group, connection):
     UI_entry.destroyed.connect(loop.quit)
     loop.exec()
     print("New entry window opened")
-    print(entry_result)
+    # print(entry_result)
     # List is only returned if submission button is clicked and valid from New Entry Window.
-    if entry_result[5] is False:
-        return False
-    else:
-        insert_entry(entry_result, id_of_group, connection)
-        return True
-        # return [entry_result[0], entry_result[1], entry_result[2], entry_result[3], entry_result[4]]
+    try:
+        if entry_result[5] is False:
+            return False
+        else:
+            insert_entry(entry_result, id_of_group, connection)
+            return True
+            # return [entry_result[0], entry_result[1], entry_result[2], entry_result[3], entry_result[4]]
+    except NameError:
+        print("table_widget.py: entry_result does not exist.")
 
 
 def insert_entry(entry_result, id_of_group, connection):

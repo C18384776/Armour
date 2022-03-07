@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PasswordGen</class>
+ <widget class="QWidget" name="PasswordGen">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>453</width>
+    <height>284</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Password Generator</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QHBoxLayout" name="password_layout">
+     <item>
+      <widget class="QLabel" name="password_label">
+       <property name="text">
+        <string>Password</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="password_lineEdit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="password_help_pushButton">
+       <property name="minimumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="strength_layout">
+     <item>
+      <widget class="QLabel" name="strength_label">
+       <property name="text">
+        <string>Password
+Strength</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QProgressBar" name="strength_progressBar">
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="strength_help_pushButton">
+       <property name="minimumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="length_layout">
+     <item>
+      <widget class="QLabel" name="length_label">
+       <property name="text">
+        <string>Length</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="length_horizontalSlider">
+       <property name="maximum">
+        <number>512</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="length_spinBox">
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>512</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="length_help_pushButton">
+       <property name="minimumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="types_layout">
+     <item>
+      <layout class="QVBoxLayout" name="types_full_layout">
+       <item>
+        <widget class="QLabel" name="types_label">
+         <property name="text">
+          <string>Character types:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="types_basic_layout">
+         <item>
+          <widget class="QPushButton" name="types_lower_alphabet_pushButton">
+           <property name="text">
+            <string>a-z</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="types_higher_alphabet_pushButton">
+           <property name="text">
+            <string>A-Z</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="types_numbers_pushButton">
+           <property name="text">
+            <string>0-9</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="types_punctuation_pushButton">
+         <property name="text">
+          <string>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[]^_`{|}~</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="types_help_pushButton">
+       <property name="minimumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="control_layout">
+     <item>
+      <spacer name="control_spacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancel_pushButton">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="submit_pushButton">
+       <property name="text">
+        <string>Submit</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

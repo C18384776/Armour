@@ -172,10 +172,16 @@ def update_password_bits(password_edit, password_bits_value, strength_progress_b
         strength_progress_bar.setValue(password_bits_value)
 
         # Hides password warning if a password is typed.
-        if password_edit.text():
-            password_warning.hide()
+        try:
+            if password_edit.text():
+                password_warning.hide()
+        except AttributeError:
+            pass
     elif password_edit.text() == '':
         strength_progress_bar.setValue(0)
 
         # User is warned that password cannot be blank.
-        password_warning.show()
+        try:
+            password_warning.show()
+        except AttributeError:
+            pass

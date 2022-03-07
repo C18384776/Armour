@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>453</width>
-    <height>284</height>
+    <width>539</width>
+    <height>391</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Password Generator</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
     <layout class="QHBoxLayout" name="password_layout">
      <item>
@@ -25,6 +25,13 @@
      </item>
      <item>
       <widget class="QLineEdit" name="password_lineEdit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="password_hide_pushButton">
+       <property name="text">
+        <string>Hide</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="password_help_pushButton">
@@ -97,7 +104,7 @@ Strength</string>
      <item>
       <widget class="QSlider" name="length_horizontalSlider">
        <property name="maximum">
-        <number>512</number>
+        <number>128</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -110,7 +117,7 @@ Strength</string>
         <number>0</number>
        </property>
        <property name="maximum">
-        <number>512</number>
+        <number>128</number>
        </property>
       </widget>
      </item>
@@ -147,7 +154,7 @@ Strength</string>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="types_basic_layout">
+        <layout class="QHBoxLayout" name="types_normal_layout">
          <item>
           <widget class="QPushButton" name="types_lower_alphabet_pushButton">
            <property name="text">
@@ -202,9 +209,75 @@ Strength</string>
     </layout>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="include_layout">
+     <item>
+      <widget class="QLabel" name="include_label">
+       <property name="text">
+        <string>Include</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="include_lineEdit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="include_help_pushButton">
+       <property name="minimumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="exclude_layout">
+     <item>
+      <widget class="QLabel" name="exclude_label">
+       <property name="text">
+        <string>Exclude</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="exclude_lineEdit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="exclude_help_pushButton">
+       <property name="minimumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>21</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="control_layout">
      <item>
-      <spacer name="control_spacer">
+      <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>

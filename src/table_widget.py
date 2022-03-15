@@ -10,7 +10,7 @@ from entry import Entry
 global entry_result
 
 
-def table_widget(source, event, table_wid, main_window, connection, id_of_group):
+def table_widget(source, event, table_wid, main_window, connection, id_of_group, entries, row):
     if event.button() == QtCore.Qt.RightButton:
         print("Right Button Pressed")
         index = table_wid.indexAt(event.pos())
@@ -47,10 +47,10 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group)
                 pass
             if menu_select == new_entry_action:
                 print("New entry selected")
-                new_entry_list = new_entry(id_of_group, connection)
+                new_entry_list = new_or_edit_entry(id_of_group, connection, False, entries, row)
                 return new_entry_list
             if menu_select == edit_entry_action:
-                edit_entry_list = edit_entry()
+                edit_entry_list = new_or_edit_entry(id_of_group, connection, True, entries, row)
                 return edit_entry_list
             if menu_select == delete_entry_action:
                 # Selected row to delete.
@@ -73,7 +73,7 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group)
             menu_select = menu.exec(event.globalPos())
 
             if menu_select == new_entry_action:
-                new_entry_list = new_entry(id_of_group, connection)
+                new_entry_list = new_or_edit_entry(id_of_group, connection, None, entries, row)
                 return new_entry_list
 
             return True
@@ -96,9 +96,23 @@ def get_entry_fields(UI_entry):
     globals()['entry_result'] = result
 
 
-def new_entry(id_of_group, connection):
+def new_or_edit_entry(id_of_group, connection, new_or_edit, entries, row):
+    """
+    New is False
+    Edit is True
+    """
     UI_entry = Entry()
     UI_entry.__init__()
+
+    print("new_or_edit_entry: {}".format(entries[row]))
+    entry = entries[row]
+    if new_or_edit is True:
+        UI_entry.ui.website_lineEdit.setText(entry[1])
+        UI_entry.ui.username_lineEdit.setText(entry[2])
+        UI_entry.ui.password_lineEdit.setText(entry[3])
+        UI_entry.ui.repeat_lineEdit.setText(entry[3])
+        UI_entry.ui.url_lineEdit.setText(entry[4])
+        UI_entry.ui.twofa_lineEdit.setText(entry[6])
 
     # Detect that button was clicked from here and try to pass down variables
     UI_entry.ui.submit_button.clicked.connect(lambda: UI_entry.submitted())
@@ -113,25 +127,27 @@ def new_entry(id_of_group, connection):
     print("New entry window opened")
     # print(entry_result)
     # List is only returned if submission button is clicked and valid from New Entry Window.
-    try:
-        if entry_result[5] is False:
-            return False
-        else:
-            insert_entry(entry_result, id_of_group, connection)
-            globals()['entry_result'][5] = False
-            return True
-            # return [entry_result[0], entry_result[1], entry_result[2], entry_result[3], entry_result[4]]
-    except NameError:
-        print("table_widget.py: entry_result does not exist.")
+    if new_or_edit is False:
+        try:
+            if entry_result[5] is False:
+                return False
+            else:
+                insert_entry(entry_result, id_of_group, connection)
+                globals()['entry_result'][5] = False
+                return True
+        except NameError:
+            print("table_widget.py: entry_result does not exist.")
+    else:
+        try:
+            if entry_result[5] is False:
+                return False
+            else:
+                edit_entry(entry_result, entry[0], connection)
+                globals()['entry_result'][5] = False
+                return True
+        except NameError:
+            print("table_widget.py: entry_result does not exist.")
 
-
-def edit_entry():
-    UI_entry = Entry()
-    UI_entry.__init__()
-    # Detect that button was clicked from here and try to pass down variables
-    UI_entry.ui.submit_button.clicked.connect(lambda: UI_entry.submitted())
-    UI_entry.ui.submit_button.clicked.connect(lambda: get_entry_fields(UI_entry))
-    UI_entry.show()
 
 def insert_entry(entry_result, id_of_group, connection):
     print("in insert entry method with {}".format(entry_result))
@@ -147,6 +163,20 @@ def insert_entry(entry_result, id_of_group, connection):
     database.database_query(connection, sql_entry_insert, pass_entry_one)
     connection.commit()
 
+
+def edit_entry(entry_result, entry_id, connection):
+    print("in edit entry method with {}".format(entry_result))
+    sql_entry_edit = """UPDATE passwords SET passwordWebsite=(?),
+    passwordName=(?), passwordPassword=(?), 
+    passwordUrl=(?), password2FA=(?) 
+    WHERE passwordId = (?)"""
+
+    pass_entry_one = [entry_result[0], entry_result[1], entry_result[2],
+                      entry_result[3], entry_result[4], entry_id]
+
+    database.database_query(connection, sql_entry_edit, pass_entry_one)
+
+    connection.commit()
 
 def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, connection):
     print("in delete entry method with {} {} {}".format(row_to_delete, id_of_entry, group_id_of_entry))

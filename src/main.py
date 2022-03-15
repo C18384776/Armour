@@ -30,8 +30,8 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_entries.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.ui.tableWidget_entries.verticalHeader().setVisible(False)
         self.ui.tableWidget_entries.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        self.ui.tableWidget_entries.setColumnHidden(0, True)
-        self.ui.tableWidget_entries.setColumnHidden(7, True)
+        self.ui.tableWidget_entries.setColumnHidden(0, True)  # Hides entry ID.
+        self.ui.tableWidget_entries.setColumnHidden(7, True)  # Hides entry groupID.
 
         # User password that will be used to re-encrypt database (ie: save)
         self.current_password = None
@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         self.current_database = None
         self.current_selected_group = None
         self.current_selected_entry = None
+        self.current_selected_row = 0
         self.con = None
 
         # Hides password & 2FA columns
@@ -55,6 +56,7 @@ class MainWindow(QMainWindow):
 
     def table_clicked(self, item):
         self.current_selected_entry = item.text()
+        self.current_selected_row = self.ui.tableWidget_entries.row(item)
         print("Clicked entry: {}".format(item.text()))
         print(self.ui.tableWidget_entries.row(item))
         print(self.ui.tableWidget_entries.item(self.ui.tableWidget_entries.row(item), 3).text())
@@ -91,13 +93,13 @@ class MainWindow(QMainWindow):
 
         print("id of group pass entry: {}".format(self.id_of_groups_password_entries))
         self.cur.execute("SELECT * FROM passwords WHERE groupId = (?)", [self.id_of_groups_password_entries])
-        entries = self.cur.fetchall()
+        self.entries = self.cur.fetchall()
 
         # (Re)load password entries for specific selected group.
-        self.ui.tableWidget_entries.setRowCount(len(entries))
-        print(entries)
+        self.ui.tableWidget_entries.setRowCount(len(self.entries))
+        print(self.entries)
         row = 0
-        for entry in entries:
+        for entry in self.entries:
             self.ui.tableWidget_entries.setItem(row, 0, QtWidgets.QTableWidgetItem(str(entry[0])))
             self.ui.tableWidget_entries.setItem(row, 1, QtWidgets.QTableWidgetItem(str(entry[1])))
             self.ui.tableWidget_entries.setItem(row, 2, QtWidgets.QTableWidgetItem(str(entry[2])))
@@ -139,7 +141,8 @@ class MainWindow(QMainWindow):
         # Event filter for QTableWidget
         if event.type() == QtCore.QEvent.MouseButtonPress:
             success = table_widget.table_widget(source, event, self.ui.tableWidget_entries,
-                                                self, self.con, self.id_of_groups_password_entries)
+                                                self, self.con, self.id_of_groups_password_entries,
+                                                self.entries, self.current_selected_row)
             if success is True:
                 self.reload_database()
             elif success is False:

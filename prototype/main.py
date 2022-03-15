@@ -63,6 +63,7 @@ class MainWindow(QMainWindow):
         self.setFixedSize(1200,400)
         self.setCentralWidget(w)
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = DataEntry()

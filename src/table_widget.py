@@ -46,10 +46,12 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group)
             if menu_select == copy_totp_action:
                 pass
             if menu_select == new_entry_action:
+                print("New entry selected")
                 new_entry_list = new_entry(id_of_group, connection)
                 return new_entry_list
             if menu_select == edit_entry_action:
-                pass
+                edit_entry_list = edit_entry()
+                return edit_entry_list
             if menu_select == delete_entry_action:
                 # Selected row to delete.
                 row_to_remove = index.row()
@@ -116,14 +118,24 @@ def new_entry(id_of_group, connection):
             return False
         else:
             insert_entry(entry_result, id_of_group, connection)
+            globals()['entry_result'][5] = False
             return True
             # return [entry_result[0], entry_result[1], entry_result[2], entry_result[3], entry_result[4]]
     except NameError:
         print("table_widget.py: entry_result does not exist.")
 
 
+def edit_entry():
+    UI_entry = Entry()
+    UI_entry.__init__()
+    # Detect that button was clicked from here and try to pass down variables
+    UI_entry.ui.submit_button.clicked.connect(lambda: UI_entry.submitted())
+    UI_entry.ui.submit_button.clicked.connect(lambda: get_entry_fields(UI_entry))
+    UI_entry.show()
+
 def insert_entry(entry_result, id_of_group, connection):
     print("in insert entry method with {}".format(entry_result))
+    print(entry_result[5])
 
     sql_entry_insert = """INSERT INTO passwords( passwordWebsite, 
     passwordName, passwordPassword, passwordUrl, 

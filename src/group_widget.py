@@ -75,7 +75,7 @@ def edit_group(edit_group_location, group_to_edit, main_window, cursor, connecti
         print("Inside group EDIT: {}".format(groups))
 
         if submit and text != '' and groups == []:
-            edit_group_location.setText(text)
+            # edit_group_location.setText(text)
             sql_group_update = """UPDATE groups SET groupName = (?) WHERE groupName = (?)"""
             edit_group_name = [text, group_to_edit]
             database.database_query(connection, sql_group_update, edit_group_name)
@@ -85,6 +85,7 @@ def edit_group(edit_group_location, group_to_edit, main_window, cursor, connecti
 
 def delete_group(delete_group_location, group_to_delete, main_window, list_widget, connection):
     print("in delete group method with {}".format(group_to_delete))
+    print(delete_group_location)
 
     reply = QMessageBox.question(main_window, "Remove a group",
                                  "Do you really want to remove the group " +
@@ -93,9 +94,8 @@ def delete_group(delete_group_location, group_to_delete, main_window, list_widge
 
     if reply == QMessageBox.Yes and group_to_delete != "Recycle Bin":
         row = list_widget.row(delete_group_location)
-        list_widget.takeItem(row)
-        sql_group_delete = """DELETE FROM groups WHERE groupName = (?)"""
-        delete_group_name = [group_to_delete]
+        sql_group_delete = """DELETE FROM groups WHERE groupId = (?)"""
+        delete_group_name = [delete_group_location]
         database.database_query(connection, sql_group_delete, delete_group_name)
         connection.commit()
         return True

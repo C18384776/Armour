@@ -157,11 +157,11 @@ class Ui_PasswordGen(object):
         self.submit_pushButton.setText(_translate("PasswordGen", "Submit"))
 
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    PasswordGen = QtWidgets.QWidget()
-    ui = Ui_PasswordGen()
-    ui.setupUi(PasswordGen)
-    PasswordGen.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     import sys
+#     app = QtWidgets.QApplication(sys.argv)
+#     PasswordGen = QtWidgets.QWidget()
+#     ui = Ui_PasswordGen()
+#     ui.setupUi(PasswordGen)
+#     PasswordGen.show()
+#     sys.exit(app.exec_())

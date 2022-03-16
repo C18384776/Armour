@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import QEvent, QEventLoop
+from PyQt5.QtCore import QEvent, QEventLoop, QTimer
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from ui_main import *
@@ -9,6 +9,7 @@ from login import UiLogin
 import database
 import group_widget
 import table_widget
+import pyotp
 
 
 class MainWindow(QMainWindow):
@@ -25,6 +26,23 @@ class MainWindow(QMainWindow):
 
         self.ui.actionNew_Database.triggered.connect(lambda: self.new_database_clicked())
         self.ui.actionOpen_Database.triggered.connect(lambda: self.open_database_clicked())
+        self.ui.actionAdd_Group.triggered.connect(lambda: group_widget.add_to_group(self.cur,
+                                                                                    self.ui.listWidget_groups,
+                                                                                    self.con,
+                                                                                    self))
+        self.ui.actionEdit_Group.triggered.\
+            connect(lambda: group_widget.edit_group(self.id_of_groups_password_entries,
+                                                    self.groups[self.id_of_groups_password_entries][1],
+                                                    self,
+                                                    self.cur,
+                                                    self.con))
+
+        self.ui.actionDelete_Group.triggered.\
+            connect(lambda: group_widget.delete_group(self.groups[self.id_of_groups_password_entries][0],
+                                                      self.groups[self.id_of_groups_password_entries][1],
+                                                      self,
+                                                      self.ui.listWidget_groups,
+                                                      self.con))
 
         self.ui.tableWidget_entries.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.ui.tableWidget_entries.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
@@ -40,7 +58,7 @@ class MainWindow(QMainWindow):
         self.current_database = None
         self.current_selected_group = None
         self.current_selected_entry = None
-        self.current_selected_row = 0
+        self.current_selected_row = False
         self.con = None
 
         # Hides password & 2FA columns
@@ -49,9 +67,16 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_entries.setItemDelegateForColumn(6, self.password_hide_column)
         self.ui.tableWidget_entries.itemClicked.connect(self.table_clicked)
 
+        self.ui.tableWidget_entries.doubleClicked.connect(self.table_double_clicked)
+        self.timer = QTimer()
+
     def group_clicked(self, item):
         self.current_selected_group = item.text()
         print("Clicked group: {}".format(item.text()))
+
+        # Clear current selected entry row as new group is clicked.
+        self.current_selected_row = False
+
         self.reload_database()
 
     def table_clicked(self, item):
@@ -61,6 +86,30 @@ class MainWindow(QMainWindow):
         print(self.ui.tableWidget_entries.row(item))
         print(self.ui.tableWidget_entries.item(self.ui.tableWidget_entries.row(item), 3).text())
         # self.reload_database()
+
+    def table_double_clicked(self, item):
+        print("Inside double clicked")
+        if self.ui.tableWidget_entries.currentColumn() == 6:
+            # TOTP code.
+            totp = pyotp.TOTP(self.current_selected_entry)
+            self.current_selected_entry = totp.now()
+        self.start = False
+        self.count = 30
+        clipboard = QApplication.clipboard()
+        clipboard.clear(mode=clipboard.Clipboard)
+        clipboard.setText(self.current_selected_entry, mode=clipboard.Clipboard)
+        print("Current Column: " + str(self.ui.tableWidget_entries.currentColumn()))
+        self.timer.stop()
+        self.timer.timeout.connect(lambda: self.clipboard_timer(clipboard))
+        self.timer.start(1000)
+
+    def clipboard_timer(self, clipboard):
+        self.count -= 1
+        print(self.count)
+        if self.count == 0:
+            self.timer.stop()
+            clipboard.clear(mode=clipboard.Clipboard)
+            print("Clipboard cleared")
 
     def open_database(self):
         # Do windows later...
@@ -82,11 +131,11 @@ class MainWindow(QMainWindow):
         # (Re)load groups
         self.cur = self.con.cursor()
         self.cur.execute("SELECT * FROM groups")
-        groups = self.cur.fetchall()
-        print(groups)
+        self.groups = self.cur.fetchall()
+        print(self.groups)
         # Clear groups before import
         self.ui.listWidget_groups.clear()
-        for group in groups:
+        for group in self.groups:
             if group[1] == self.current_selected_group:
                 self.id_of_groups_password_entries = group[0]
             self.ui.listWidget_groups.addItem(group[1])

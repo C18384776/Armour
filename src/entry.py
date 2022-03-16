@@ -1,9 +1,12 @@
 # import sys
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import QEventLoop
+
 from ui_entry import Ui_Entry
 import error_checking
 import crypto
+from passgen import PassGen
 
 
 class Entry(QtWidgets.QWidget):
@@ -47,6 +50,25 @@ class Entry(QtWidgets.QWidget):
         self.twofa = ''
 
         self.submitted_info = False
+
+        self.ui.password_generator_button.clicked.connect(lambda: self.password_generator_clicked())
+
+    def password_generator_clicked(self):
+        print("Password generator clicked")
+        UI_passgen = PassGen()
+        UI_passgen.__init__()
+        UI_passgen.ui.submit_pushButton.clicked.connect(lambda: self.passgen_submit(UI_passgen))
+        UI_passgen.show()
+        loop = QEventLoop()
+        # By default, login is hidden on close()
+        # This attribute makes it destroyed.
+        UI_passgen.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        UI_passgen.destroyed.connect(loop.quit)
+
+    def passgen_submit(self, UI_passgen):
+        self.ui.password_lineEdit.setText(UI_passgen.ui.password_lineEdit.text())
+        self.ui.repeat_lineEdit.setText(UI_passgen.ui.password_lineEdit.text())
+        UI_passgen.close()
 
     def get_entry_fields(self):
         return [self.website, self.username, self.password, self.url, self.twofa, self.submitted_info]

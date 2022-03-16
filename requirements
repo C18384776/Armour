@@ -5,3 +5,4 @@ io
 pyAesCrypt
 sqlite3
 hashlib
+pyotp

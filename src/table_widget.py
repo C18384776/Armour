@@ -60,6 +60,10 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
                 # Selected row group ID from database.
                 group_id_of_entry = table_wid.item(row_to_remove, 7)
                 delete_entry(index.row(), id_of_entry.text(), group_id_of_entry.text(), main_window, connection)
+                print("Delete entry")
+                print(index.row())
+                print(id_of_entry.text())
+                print(group_id_of_entry.text())
             if menu_select == open_url_action:
                 pass
             else:
@@ -73,7 +77,7 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
             menu_select = menu.exec(event.globalPos())
 
             if menu_select == new_entry_action:
-                new_entry_list = new_or_edit_entry(id_of_group, connection, None, entries, row)
+                new_entry_list = new_or_edit_entry(id_of_group, connection, False, entries, row)
                 return new_entry_list
 
             return True
@@ -96,23 +100,25 @@ def get_entry_fields(UI_entry):
     globals()['entry_result'] = result
 
 
-def new_or_edit_entry(id_of_group, connection, new_or_edit, entries, row):
+def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=False):
     """
     New is False
     Edit is True
     """
     UI_entry = Entry()
     UI_entry.__init__()
-
-    print("new_or_edit_entry: {}".format(entries[row]))
-    entry = entries[row]
-    if new_or_edit is True:
-        UI_entry.ui.website_lineEdit.setText(entry[1])
-        UI_entry.ui.username_lineEdit.setText(entry[2])
-        UI_entry.ui.password_lineEdit.setText(entry[3])
-        UI_entry.ui.repeat_lineEdit.setText(entry[3])
-        UI_entry.ui.url_lineEdit.setText(entry[4])
-        UI_entry.ui.twofa_lineEdit.setText(entry[6])
+    if row is False:
+        print("Row is false in new_or_edit_entry")
+    else:
+        print("new_or_edit_entry: {}".format(entries[row]))
+        entry = entries[row]
+        if new_or_edit is True:
+            UI_entry.ui.website_lineEdit.setText(entry[1])
+            UI_entry.ui.username_lineEdit.setText(entry[2])
+            UI_entry.ui.password_lineEdit.setText(entry[3])
+            UI_entry.ui.repeat_lineEdit.setText(entry[3])
+            UI_entry.ui.url_lineEdit.setText(entry[4])
+            UI_entry.ui.twofa_lineEdit.setText(entry[6])
 
     # Detect that button was clicked from here and try to pass down variables
     UI_entry.ui.submit_button.clicked.connect(lambda: UI_entry.submitted())
@@ -158,14 +164,15 @@ def insert_entry(entry_result, id_of_group, connection):
     passwordCreation, password2FA, groupId) VALUES(?,?,?,?,?,?,?)"""
 
     pass_entry_one = [entry_result[0], entry_result[1], entry_result[2],
-                      entry_result[4], datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
-                      entry_result[5], id_of_group]
+                      entry_result[3], datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
+                      entry_result[4], id_of_group]
     database.database_query(connection, sql_entry_insert, pass_entry_one)
     connection.commit()
 
 
 def edit_entry(entry_result, entry_id, connection):
     print("in edit entry method with {}".format(entry_result))
+
     sql_entry_edit = """UPDATE passwords SET passwordWebsite=(?),
     passwordName=(?), passwordPassword=(?), 
     passwordUrl=(?), password2FA=(?) 
@@ -178,12 +185,13 @@ def edit_entry(entry_result, entry_id, connection):
 
     connection.commit()
 
+
 def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, connection):
     print("in delete entry method with {} {} {}".format(row_to_delete, id_of_entry, group_id_of_entry))
 
     reply = QMessageBox.question(main_window, "Remove a group",
                                  "Do you really want to remove this entry?\n"
-                                 "It will be moved to the Recycle Bin or delete entirely "
+                                 "It will be moved to the Recycle Bin or deleted entirely "
                                  "if it's there already.",
                                  QMessageBox.Yes | QMessageBox.No)
 

@@ -2,7 +2,6 @@ import sys
 
 from PyQt5.QtCore import QEvent, QEventLoop, QTimer
 from PyQt5.QtWidgets import QMainWindow, QApplication
-
 from ui_main import *
 from registration import UiRegistration
 from login import UiLogin
@@ -10,6 +9,8 @@ import database
 import group_widget
 import table_widget
 import pyotp
+import qdarkstyle
+import tempfile
 
 
 class MainWindow(QMainWindow):
@@ -42,7 +43,11 @@ class MainWindow(QMainWindow):
                                                       self.groups[self.id_of_groups_password_entries][1],
                                                       self,
                                                       self.ui.listWidget_groups,
-                                                      self.con))
+                                                      self.con,
+                                                      True))
+
+        self.ui.actionDark_Theme.triggered.connect(lambda: self.dark_theme_activated())
+        self.ui.actionLight_Theme.triggered.connect(lambda: self.light_theme_activated())
 
         self.ui.tableWidget_entries.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.ui.tableWidget_entries.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
@@ -69,6 +74,13 @@ class MainWindow(QMainWindow):
 
         self.ui.tableWidget_entries.doubleClicked.connect(self.table_double_clicked)
         self.timer = QTimer()
+        self.light_stylesheet = self.styleSheet()
+
+    def dark_theme_activated(self):
+        self.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+
+    def light_theme_activated(self):
+        self.setStyleSheet(self.light_stylesheet)
 
     def group_clicked(self, item):
         self.current_selected_group = item.text()
@@ -112,12 +124,15 @@ class MainWindow(QMainWindow):
             print("Clipboard cleared")
 
     def open_database(self):
-        # Do windows later...
-        with open("/tmp/armour.db", 'wb') as file:
+        tempdir = tempfile.TemporaryDirectory()
+        tempdir_location = tempdir.name + "/armour.db"
+        print(tempdir_location)
+
+        with open(tempdir_location, 'wb') as file:
             file.write(self.current_database)
             file.close()
 
-        self.con = database.make_connection("/tmp/armour.db")
+        self.con = database.make_connection(tempdir_location)
         # Need to close database connection someday.
 
     def reload_database(self):

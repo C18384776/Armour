@@ -83,7 +83,7 @@ def edit_group(edit_group_location, group_to_edit, main_window, cursor, connecti
             return True
 
 
-def delete_group(delete_group_location, group_to_delete, main_window, list_widget, connection):
+def delete_group(delete_group_location, group_to_delete, main_window, list_widget, connection, action_button=False):
     print("in delete group method with {}".format(group_to_delete))
     print(delete_group_location)
 
@@ -93,7 +93,11 @@ def delete_group(delete_group_location, group_to_delete, main_window, list_widge
                                  "?", QMessageBox.Yes | QMessageBox.No)
 
     if reply == QMessageBox.Yes and group_to_delete != "Recycle Bin":
-        row = list_widget.row(delete_group_location)
+        if action_button == True:
+            row = list_widget.row(list_widget.item(delete_group_location))
+        else:
+            row = list_widget.row(delete_group_location)
+        list_widget.takeItem(row)
         sql_group_delete = """DELETE FROM groups WHERE groupId = (?)"""
         delete_group_name = [delete_group_location]
         database.database_query(connection, sql_group_delete, delete_group_name)

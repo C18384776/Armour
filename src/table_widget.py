@@ -5,6 +5,7 @@ from PyQt5.QtCore import QEventLoop
 from PyQt5.QtWidgets import QAction, QMessageBox
 import database
 from entry import Entry
+from prevpass import PreviousPasswords
 
 
 global entry_result
@@ -25,6 +26,7 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
         edit_entry_action = QAction("Edit Entry")
         delete_entry_action = QAction("Delete Entry")
         open_url_action = QAction("Open Website")
+        open_previous_passwords = QAction("Open Previous Passwords")
 
         menu.addAction(copy_username_action)
         menu.addAction(copy_password_action)
@@ -35,24 +37,25 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
         menu.addAction(delete_entry_action)
         menu.addSeparator()
         menu.addAction(open_url_action)
+        menu.addAction(open_previous_passwords)
 
         if index.data() is not None:
             print(index.data())
             menu_select = menu.exec(event.globalPos())
             if menu_select == copy_username_action:
                 pass
-            if menu_select == copy_password_action:
+            elif menu_select == copy_password_action:
                 pass
-            if menu_select == copy_totp_action:
+            elif menu_select == copy_totp_action:
                 pass
-            if menu_select == new_entry_action:
+            elif menu_select == new_entry_action:
                 print("New entry selected")
                 new_entry_list = new_or_edit_entry(id_of_group, connection, False, entries, row)
                 return new_entry_list
-            if menu_select == edit_entry_action:
+            elif menu_select == edit_entry_action:
                 edit_entry_list = new_or_edit_entry(id_of_group, connection, True, entries, row)
                 return edit_entry_list
-            if menu_select == delete_entry_action:
+            elif menu_select == delete_entry_action:
                 # Selected row to delete.
                 row_to_remove = index.row()
                 # Selected row ID from database.
@@ -64,8 +67,10 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
                 print(index.row())
                 print(id_of_entry.text())
                 print(group_id_of_entry.text())
-            if menu_select == open_url_action:
+            elif menu_select == open_url_action:
                 pass
+            elif menu_select == open_previous_passwords:
+                previous_passwords_window(entries, row, connection)
             else:
                 print("user clicked out of group.")
 
@@ -208,3 +213,25 @@ def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, con
         database.database_query(connection, sql_delete_entry, [id_of_entry])
         connection.commit()
         return True
+
+
+def previous_passwords_window(entries, row, connection):
+    print("table_widget: Opened previous passwords")
+    print("-----")
+    print(entries)
+    print(row)
+    print("-----")
+
+    entry = entries[row]
+    print(entry[0])
+
+    UI_prevpass = PreviousPasswords()
+    UI_prevpass.__init__()
+    UI_prevpass.set_previous_password_list(entry, connection)
+    UI_prevpass.show()
+    loop = QEventLoop()
+    # By default, login is hidden on close()
+    # This attribute makes it destroyed.
+    UI_prevpass.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+    UI_prevpass.destroyed.connect(loop.quit)
+    loop.exec()

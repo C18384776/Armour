@@ -21,7 +21,18 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QTableWidget" name="prevpass_tableWidget"/>
+    <widget class="QTableWidget" name="prevpass_tableWidget">
+     <column>
+      <property name="text">
+       <string>Password</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Date Changed</string>
+      </property>
+     </column>
+    </widget>
    </item>
   </layout>
  </widget>

@@ -9,6 +9,7 @@ import database
 import warn
 import datetime
 
+
 def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret_edit, password_edit):
     # Function checks if fields are entered.
     # True = All needed fields are non-blank.
@@ -46,11 +47,22 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
                                             groupId integer NOT NULL,
                                             FOREIGN KEY (groupId) REFERENCES groups(groupId));"""
 
+                sql_create_previous_password_table = """
+                                        CREATE TABLE IF NOT EXISTS previous_passwords (
+                                            prevPasswordId INTEGER PRIMARY KEY,
+                                            prevPassword text NOT NULL,
+                                            prevPasswordCreation timestamp,
+                                            passwordId integer NOT NULL,
+                                            FOREIGN KEY (passwordId) REFERENCES groups(passwordId));"""
+
                 sql_group_insert = """INSERT INTO groups(groupName) VALUES(?)"""
 
-                sql_entry_insert = """INSERT INTO passwords( passwordWebsite, 
+                sql_entry_insert = """INSERT INTO passwords(passwordWebsite, 
                 passwordName, passwordPassword, passwordUrl, 
                 passwordCreation, password2FA, groupId) VALUES(?,?,?,?,?,?,?)"""
+
+                sql_prev_pass_insert = """INSERT INTO previous_passwords(prevPassword, 
+                prevPasswordCreation, passwordId) VALUES(?,?,?)"""
 
                 connection = database.make_connection(database_save_path)
                 print("connection made? {}".format(connection))
@@ -63,27 +75,45 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
                     group_name_bin = ['Recycle Bin']
 
                     pass_entry_one = ['Facebook', 'Declan', 'password1',
-                                      'www.facebook.com', datetime.datetime.now(),
+                                      'www.facebook.com', datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
                                       '123456', 1]
 
                     pass_entry_two = ['Twitter', 'Declan', 'password2',
-                                      'www.twitter.com', datetime.datetime.now(),
+                                      'www.twitter.com', datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
                                       '123456', 1]
 
                     pass_entry_three = ['AIB', 'Declan', 'password3',
-                                      'www.aib.ie', datetime.datetime.now(),
-                                      '123456', 2]
+                                        'www.aib.ie', datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
+                                        '123456', 2]
 
+                    prev_pass_entry_one = ['previouspassword123',
+                                           datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
+                                           2]
+
+                    prev_pass_entry_two = ['previouspassword456',
+                                           datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
+                                           3]
+
+                    # Create SQL tables.
                     database.database_query(connection, sql_create_group_table, None)
                     database.database_query(connection, sql_create_password_table, None)
+                    database.database_query(connection, sql_create_previous_password_table, None)
+
+                    # Sample database inserts into groups table.
                     database.database_query(connection, sql_group_insert, group_name_sm)
                     database.database_query(connection, sql_group_insert, group_name_bank)
                     database.database_query(connection, sql_group_insert, group_name_school)
                     database.database_query(connection, sql_group_insert, group_name_other)
                     database.database_query(connection, sql_group_insert, group_name_bin)
+
+                    # Sample database inserts into passwords table.
                     database.database_query(connection, sql_entry_insert, pass_entry_one)
                     database.database_query(connection, sql_entry_insert, pass_entry_two)
                     database.database_query(connection, sql_entry_insert, pass_entry_three)
+
+                    # Sample database inserts into previous_passwords table.
+                    database.database_query(connection, sql_prev_pass_insert, prev_pass_entry_one)
+                    database.database_query(connection, sql_prev_pass_insert, prev_pass_entry_two)
 
                     connection.commit()
                     connection.close()

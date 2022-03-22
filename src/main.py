@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import QEvent, QEventLoop, QTimer
+from PyQt5.QtCore import QEvent, QEventLoop, QTimer, QSettings
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from ui_main import *
 from registration import UiRegistration
@@ -31,16 +31,17 @@ class MainWindow(QMainWindow):
                                                                                     self.ui.listWidget_groups,
                                                                                     self.con,
                                                                                     self))
+
         self.ui.actionEdit_Group.triggered.\
             connect(lambda: group_widget.edit_group(self.id_of_groups_password_entries,
-                                                    self.groups[self.id_of_groups_password_entries][1],
+                                                    self.groups[self.id_of_groups_password_entries-1][1],
                                                     self,
                                                     self.cur,
                                                     self.con))
 
         self.ui.actionDelete_Group.triggered.\
-            connect(lambda: group_widget.delete_group(self.groups[self.id_of_groups_password_entries][0],
-                                                      self.groups[self.id_of_groups_password_entries][1],
+            connect(lambda: group_widget.delete_group(self.groups[self.id_of_groups_password_entries-1][0],
+                                                      self.groups[self.id_of_groups_password_entries-1][1],
                                                       self,
                                                       self.ui.listWidget_groups,
                                                       self.con,
@@ -76,11 +77,28 @@ class MainWindow(QMainWindow):
         self.timer = QTimer()
         self.light_stylesheet = self.styleSheet()
 
+        self.settings = QSettings("Armour", "Armour Password Manager")
+        print(self.settings.fileName())
+
+        try:
+            self.resize(self.settings.value("Window Size"))
+            self.move(self.settings.value("Window Position"))
+            self.setStyleSheet(self.settings.value("Theme"))
+        except:
+            pass
+
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        self.settings.setValue("Window Size", self.size())
+        self.settings.setValue("Window Position", self.pos())
+        print("Closed event")
+
     def dark_theme_activated(self):
         self.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        self.settings.setValue("Theme", qdarkstyle.load_stylesheet_pyqt5())
 
     def light_theme_activated(self):
         self.setStyleSheet(self.light_stylesheet)
+        self.settings.setValue("Theme", self.light_stylesheet)
 
     def group_clicked(self, item):
         self.current_selected_group = item.text()
@@ -105,13 +123,18 @@ class MainWindow(QMainWindow):
             # TOTP code.
             totp = pyotp.TOTP(self.current_selected_entry)
             self.current_selected_entry = totp.now()
-        self.start = False
         self.count = 30
         clipboard = QApplication.clipboard()
         clipboard.clear(mode=clipboard.Clipboard)
         clipboard.setText(self.current_selected_entry, mode=clipboard.Clipboard)
         print("Current Column: " + str(self.ui.tableWidget_entries.currentColumn()))
+        # Timer initialisation.
+        self.timer = QTimer()
+
+        # Timer stops in case another timer was previously called.
         self.timer.stop()
+
+        # Call functions each second.
         self.timer.timeout.connect(lambda: self.clipboard_timer(clipboard))
         self.timer.start(1000)
 
@@ -124,8 +147,8 @@ class MainWindow(QMainWindow):
             print("Clipboard cleared")
 
     def open_database(self):
-        tempdir = tempfile.TemporaryDirectory()
-        tempdir_location = tempdir.name + "/armour.db"
+        self.tempdir = tempfile.TemporaryDirectory()
+        tempdir_location = self.tempdir.name + "/armour.db"
         print(tempdir_location)
 
         with open(tempdir_location, 'wb') as file:

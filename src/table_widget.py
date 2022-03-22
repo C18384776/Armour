@@ -7,7 +7,6 @@ import database
 from entry import Entry
 from prevpass import PreviousPasswords
 
-
 global entry_result
 
 
@@ -122,6 +121,7 @@ def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=F
             UI_entry.ui.username_lineEdit.setText(entry[2])
             UI_entry.ui.password_lineEdit.setText(entry[3])
             UI_entry.ui.repeat_lineEdit.setText(entry[3])
+            old_password = entry[3]
             UI_entry.ui.url_lineEdit.setText(entry[4])
             UI_entry.ui.twofa_lineEdit.setText(entry[6])
 
@@ -153,7 +153,7 @@ def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=F
             if entry_result[5] is False:
                 return False
             else:
-                edit_entry(entry_result, entry[0], connection)
+                edit_entry(entry_result, entry[0], connection, old_password)
                 globals()['entry_result'][5] = False
                 return True
         except NameError:
@@ -175,7 +175,7 @@ def insert_entry(entry_result, id_of_group, connection):
     connection.commit()
 
 
-def edit_entry(entry_result, entry_id, connection):
+def edit_entry(entry_result, entry_id, connection, old_password):
     print("in edit entry method with {}".format(entry_result))
 
     sql_entry_edit = """UPDATE passwords SET passwordWebsite=(?),
@@ -187,6 +187,15 @@ def edit_entry(entry_result, entry_id, connection):
                       entry_result[3], entry_result[4], entry_id]
 
     database.database_query(connection, sql_entry_edit, pass_entry_one)
+
+    sql_prev_pass_insert = """INSERT INTO previous_passwords(prevPassword, 
+    prevPasswordCreation, passwordId) VALUES(?,?,?)"""
+
+    prev_pass_entry = [old_password,
+                       datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
+                       entry_id]
+
+    database.database_query(connection, sql_prev_pass_insert, prev_pass_entry)
 
     connection.commit()
 

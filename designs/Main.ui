@@ -111,8 +111,15 @@
      <addaction name="actionLight_Theme"/>
      <addaction name="actionDark_Theme"/>
     </widget>
+    <widget class="QMenu" name="menuLanguage">
+     <property name="title">
+      <string>Language</string>
+     </property>
+     <addaction name="actionEnglish"/>
+     <addaction name="actionRussian"/>
+    </widget>
     <addaction name="menuTheme"/>
-    <addaction name="actionOptions"/>
+    <addaction name="menuLanguage"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -276,6 +283,16 @@
   <action name="actionDark_Theme">
    <property name="text">
     <string>Dark Theme</string>
+   </property>
+  </action>
+  <action name="actionEnglish">
+   <property name="text">
+    <string>English</string>
+   </property>
+  </action>
+  <action name="actionRussian">
+   <property name="text">
+    <string>Russian</string>
    </property>
   </action>
  </widget>

@@ -63,7 +63,7 @@ def add_to_group(cursor, list_widget, connection, main_window):
 
 def edit_group(edit_group_location, group_to_edit, main_window, cursor, connection):
     print("in edit group with {}".format(group_to_edit))
-    if group_to_edit is not None:
+    if group_to_edit is not None and group_to_edit != "Recycle Bin":
         text, submit = QInputDialog.getText(main_window,
                                             "Edit a group", "Edit group name",
                                             QLineEdit.Normal,
@@ -83,10 +83,13 @@ def edit_group(edit_group_location, group_to_edit, main_window, cursor, connecti
             return True
 
 
-def delete_group(delete_group_location, group_to_delete, main_window, list_widget, connection, action_button=False):
+def delete_group(delete_group_location, group_to_delete, main_window,
+                 list_widget, connection, action_button=False):
     print("in delete group method with {}".format(group_to_delete))
+    print("delete group location:")
     print(delete_group_location)
-
+    print(group_to_delete)
+    print("-------")
     reply = QMessageBox.question(main_window, "Remove a group",
                                  "Do you really want to remove the group " +
                                  str(group_to_delete) +
@@ -94,12 +97,15 @@ def delete_group(delete_group_location, group_to_delete, main_window, list_widge
 
     if reply == QMessageBox.Yes and group_to_delete != "Recycle Bin":
         if action_button == True:
-            row = list_widget.row(list_widget.item(delete_group_location))
+            row = list_widget.row(list_widget.item(delete_group_location-1))
+            list_widget.takeItem(row)
+            print("Correct row: {}".format(row))
         else:
             row = list_widget.row(delete_group_location)
-        list_widget.takeItem(row)
-        sql_group_delete = """DELETE FROM groups WHERE groupId = (?)"""
-        delete_group_name = [delete_group_location]
+            list_widget.takeItem(row)
+
+        sql_group_delete = """DELETE FROM groups WHERE groupName = (?)"""
+        delete_group_name = [group_to_delete]
         database.database_query(connection, sql_group_delete, delete_group_name)
         connection.commit()
         return True

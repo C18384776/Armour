@@ -1,6 +1,8 @@
 import sys
 
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
+
 from ui_prevpass import Ui_PreviousPasswords
 import qdarkstyle
 
@@ -13,7 +15,12 @@ class PreviousPasswords(QtWidgets.QWidget):
 
         self.ui.prevpass_tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
-        self.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        self.settings = QSettings("Armour", "Armour Password Manager")
+
+        try:
+            self.setStyleSheet(self.settings.value("Theme"))
+        except:
+            pass
 
     def set_previous_password_list(self, entry, connection):
         cur = connection.cursor()
@@ -30,10 +37,3 @@ class PreviousPasswords(QtWidgets.QWidget):
             self.ui.prevpass_tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(str(entry[1])))
             self.ui.prevpass_tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(str(entry[2])))
             row += 1
-
-
-# if __name__ == "__main__":
-#     app = QtWidgets.QApplication(sys.argv)
-#     window = PreviousPasswords()
-#     window.show()
-#     sys.exit(app.exec_())

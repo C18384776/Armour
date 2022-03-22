@@ -1,6 +1,8 @@
 import sys
 import string
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
+
 from ui_passgen import Ui_PasswordGen
 import error_checking
 import crypto
@@ -67,6 +69,13 @@ class PassGen(QtWidgets.QWidget):
 
         self.ui.exclude_lineEdit.textChanged.connect(lambda: self.update_password(self.length_of_password))
         self.ui.include_lineEdit.textChanged.connect(lambda: self.update_password(self.length_of_password))
+
+        self.settings = QSettings("Armour", "Armour Password Manager")
+
+        try:
+            self.setStyleSheet(self.settings.value("Theme"))
+        except:
+            pass
 
     def slider_changed(self, value):
         self.ui.length_spinBox.setValue(value)

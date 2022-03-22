@@ -1,4 +1,6 @@
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import QSettings
+
 import file_explorer
 import error_checking
 import crypto
@@ -146,6 +148,13 @@ class UiLogin(object):
         self.master_password = None
         self.database = None
 
+        self.settings = QSettings("Armour", "Armour Password Manager")
+
+        try:
+            Login.setStyleSheet(self.settings.value("Theme"))
+        except:
+            pass
+
     def login_close(self, Login):
         # Closes login view if success.
         if self.master_password is not None:
@@ -193,12 +202,3 @@ class UiLogin(object):
         self.quit_button.setText(_translate("Login", "Quit"))
         self.login_button.setText(_translate("Login", "Login"))
 
-# if __name__ == "__main__":
-#     import sys
-#
-#     app = QtWidgets.QApplication(sys.argv)
-#     Login = QtWidgets.QWidget()
-#     ui = UiLogin()
-#     ui.setup_ui_login(Login)
-#     Login.show()
-#     sys.exit(app.exec_())

@@ -1,7 +1,7 @@
 # import sys
 
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QEventLoop
+from PyQt5.QtCore import QEventLoop, QSettings
 
 from ui_entry import Ui_Entry
 import error_checking
@@ -52,6 +52,13 @@ class Entry(QtWidgets.QWidget):
         self.submitted_info = False
 
         self.ui.password_generator_button.clicked.connect(lambda: self.password_generator_clicked())
+
+        self.settings = QSettings("Armour", "Armour Password Manager")
+
+        try:
+            self.setStyleSheet(self.settings.value("Theme"))
+        except:
+            pass
 
     def password_generator_clicked(self):
         print("Password generator clicked")

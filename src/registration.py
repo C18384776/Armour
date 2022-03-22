@@ -1,7 +1,10 @@
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import QSettings
+
 import file_explorer
 import error_checking
 import crypto
+import qdarkstyle
 
 
 class UiRegistration(object):
@@ -180,6 +183,13 @@ class UiRegistration(object):
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
 
+        self.settings = QSettings("Armour", "Armour Password Manager")
+
+        try:
+            Registration.setStyleSheet(self.settings.value("Theme"))
+        except:
+            pass
+
     def browse_dir(self):
         self.dir_path = QtWidgets.QFileDialog.getExistingDirectory()
         self.directory_edit.setText(self.dir_path)
@@ -212,14 +222,3 @@ class UiRegistration(object):
         self.secret_help_button.setText(_translate("Registration", "?"))
         self.quit_button.setText(_translate("Registration", "Quit"))
         self.register_button.setText(_translate("Registration", "Register"))
-
-
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    Registration = QtWidgets.QWidget()
-    ui = UiRegistration()
-    ui.setup_ui_registration(Registration)
-    Registration.show()
-    sys.exit(app.exec_())

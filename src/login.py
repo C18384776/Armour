@@ -147,6 +147,7 @@ class UiLogin(object):
 
         self.master_password = None
         self.database = None
+        self.current_database_location = None
 
         self.settings = QSettings("Armour", "Armour Password Manager")
 
@@ -174,6 +175,7 @@ class UiLogin(object):
                              self.secret_edit,
                              self.password_edit,
                              self.directory_edit)
+            self.current_database_location = self.directory_edit.text()
         except:
             pass
 

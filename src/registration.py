@@ -4,7 +4,6 @@ from PyQt5.QtCore import QSettings
 import file_explorer
 import error_checking
 import crypto
-import qdarkstyle
 
 
 class UiRegistration(object):
@@ -166,7 +165,7 @@ class UiRegistration(object):
                                         self.expert_checkBox.isChecked(),
                                         self.secret_edit,
                                         self.secret_warning),
-            self.password_bits_value,
+            self.strength_progress_bar.value(),
             self.directory_edit,
             self.expert_checkBox.isChecked(),
             self.secret_edit,

@@ -80,7 +80,6 @@
     <addaction name="actionNew_Database"/>
     <addaction name="actionOpen_Database"/>
     <addaction name="actionSave_Database"/>
-    <addaction name="actionSave_Database_as"/>
     <addaction name="separator"/>
     <addaction name="actionSave_Exit"/>
    </widget>
@@ -111,15 +110,7 @@
      <addaction name="actionLight_Theme"/>
      <addaction name="actionDark_Theme"/>
     </widget>
-    <widget class="QMenu" name="menuLanguage">
-     <property name="title">
-      <string>Language</string>
-     </property>
-     <addaction name="actionEnglish"/>
-     <addaction name="actionRussian"/>
-    </widget>
     <addaction name="menuTheme"/>
-    <addaction name="menuLanguage"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -156,7 +147,6 @@
    <addaction name="actionEdit_Entry"/>
    <addaction name="actionDelete_Entry"/>
    <addaction name="separator"/>
-   <addaction name="actionOptions"/>
   </widget>
   <action name="actionNew_Database">
    <property name="icon">
@@ -290,7 +280,7 @@
     <string>English</string>
    </property>
   </action>
-  <action name="actionRussian">
+  <action name="action">
    <property name="text">
     <string>Russian</string>
    </property>

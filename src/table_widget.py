@@ -42,11 +42,14 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
             print(index.data())
             menu_select = menu.exec(event.globalPos())
             if menu_select == copy_username_action:
-                pass
+                print(main_window.ui.tableWidget_entries.item(
+                    main_window.ui.tableWidget_entries.row(main_window.item_clicked), 2).text())
             elif menu_select == copy_password_action:
-                pass
+                print(main_window.ui.tableWidget_entries.item(
+                    main_window.ui.tableWidget_entries.row(main_window.item_clicked), 3).text())
             elif menu_select == copy_totp_action:
-                pass
+                print(main_window.ui.tableWidget_entries.item(
+                    main_window.ui.tableWidget_entries.row(main_window.item_clicked), 6).text())
             elif menu_select == new_entry_action:
                 print("New entry selected")
                 new_entry_list = new_or_edit_entry(id_of_group, connection, False, entries, row)

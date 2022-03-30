@@ -1,7 +1,11 @@
+import io
 import sys
 
+import pyAesCrypt
 from PyQt5.QtCore import QEvent, QEventLoop, QTimer, QSettings
 from PyQt5.QtWidgets import QMainWindow, QApplication
+
+from src import crypto
 from ui_main import *
 from registration import UiRegistration
 from login import UiLogin
@@ -49,6 +53,7 @@ class MainWindow(QMainWindow):
 
         self.ui.actionDark_Theme.triggered.connect(lambda: self.dark_theme_activated())
         self.ui.actionLight_Theme.triggered.connect(lambda: self.light_theme_activated())
+        self.ui.actionSave_Database.triggered.connect(lambda: self.save_requested())
 
         self.ui.tableWidget_entries.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.ui.tableWidget_entries.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
@@ -92,6 +97,37 @@ class MainWindow(QMainWindow):
         self.settings.setValue("Window Position", self.pos())
         print("Closed event")
 
+    def save_requested(self):
+        buffer_size = 64 * 1024
+
+        try:
+            with open(self.tempdir_location, 'rb') as file:
+
+                # Read initial unencrypted database and copy its contents to a variable.
+                content = file.read()
+
+                # Input plaintext binary stream
+                plaintext = io.BytesIO(content)
+
+                # Initialize ciphertext binary stream
+                cipher = io.BytesIO()
+
+                # Encrypt stream
+                pyAesCrypt.encryptStream(plaintext, cipher, self.current_password, buffer_size)
+
+                # Print encrypted data
+                print("This is the ciphertext:\n" + str(cipher.getvalue()))
+
+                file.close()
+            print(self.current_database)
+
+            # Overwrite database file with encryption.
+            with open(self.current_db_location, 'wb') as file:
+                file.write(cipher.getvalue())
+                file.close()
+        except:
+            print("Error occurred in method main.py save_requested()")
+
     def dark_theme_activated(self):
         self.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.settings.setValue("Theme", qdarkstyle.load_stylesheet_pyqt5())
@@ -111,6 +147,7 @@ class MainWindow(QMainWindow):
 
     def table_clicked(self, item):
         self.current_selected_entry = item.text()
+        self.item_clicked = item
         self.current_selected_row = self.ui.tableWidget_entries.row(item)
         print("Clicked entry: {}".format(item.text()))
         print(self.ui.tableWidget_entries.row(item))
@@ -148,15 +185,18 @@ class MainWindow(QMainWindow):
 
     def open_database(self):
         self.tempdir = tempfile.TemporaryDirectory()
-        tempdir_location = self.tempdir.name + "/armour.db"
-        print(tempdir_location)
+        self.tempdir_location = self.tempdir.name + "/armour.db"
+        print(self.tempdir_location)
 
-        with open(tempdir_location, 'wb') as file:
+        with open(self.tempdir_location, 'wb') as file:
             file.write(self.current_database)
             file.close()
 
-        self.con = database.make_connection(tempdir_location)
+        self.con = database.make_connection(self.tempdir_location)
+
         # Need to close database connection someday.
+        # Cleanup cleans up directory.
+        # self.tempdir.cleanup()
 
     def reload_database(self):
         self.id_of_groups_password_entries = 1
@@ -220,8 +260,10 @@ class MainWindow(QMainWindow):
         if self.UI_Log.master_password is not None:
             self.current_password = self.UI_Log.master_password
             self.current_database = self.UI_Log.database
+            self.current_db_location = self.UI_Log.current_database_location
             print("password passed {}".format(self.current_password))
             print("database passed {}".format(self.current_database))
+            print("Db directory location {}".format(self.current_db_location))
             self.reload_database()
 
     def eventFilter(self, source, event):
@@ -248,6 +290,9 @@ class MainWindow(QMainWindow):
 
 
 class PasswordHide(QtWidgets.QStyledItemDelegate):
+    """
+    Used to convert plaintext to password text (asterisks ****) in QTableWidget.
+    """
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
         style = option.widget.style() or QtWidgets.QApplication.style()

@@ -32,8 +32,10 @@ def database_query(connection, query, variables):
     User given query to be performed to a given SQLite3 database.
 
     :param variables:
+    Values that are passed into the query.
     """
     try:
+        # If query has no variables to pass into.
         if variables is None:
             cur = connection.cursor()
             cur.execute(query)

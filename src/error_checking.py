@@ -55,6 +55,34 @@ def expert_box_clicked(checkbox, label, edit, button, help_button, warning):
 
 
 def check_fields(dir_edit, dir_warning, pass_edit, pass_warning, checkbox, secret_edit, secret_warning):
+    """
+    Check that fields are none empty.
+
+    :param dir_edit:
+    QLineEdit directory location.
+
+    :param dir_warning:
+    Directory warning which shows if directory field is empty.
+
+    :param pass_edit:
+    QLineEdit password.
+
+    :param pass_warning:
+    Password warning which shows if password field is empty.
+
+    :param checkbox:
+    Checkbox checks that QLineEdit secret file location is not empty if toggled on.
+
+    :param secret_edit:
+    QLineEdit file location.
+
+    :param secret_warning:
+    Secret file warning which shows if field is empty.
+
+    :return:
+    True - fields are not fully entered. Show warning.
+    False - fields are fully entered. Can proceed.
+    """
     error = 0
 
     if dir_edit.text() == '':

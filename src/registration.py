@@ -4,6 +4,7 @@ from PyQt5.QtCore import QSettings
 import file_explorer
 import error_checking
 import crypto
+import information
 
 
 class UiRegistration(object):
@@ -183,6 +184,8 @@ class UiRegistration(object):
         QtCore.QMetaObject.connectSlotsByName(Registration)
 
         self.settings = QSettings("Armour", "Armour Password Manager")
+
+        self.directory_help.clicked.connect(lambda: information.directory_edit_moment())
 
         try:
             Registration.setStyleSheet(self.settings.value("Theme"))

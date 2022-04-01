@@ -31,29 +31,19 @@ class MainWindow(QMainWindow):
 
         self.ui.actionNew_Database.triggered.connect(lambda: self.new_database_clicked())
         self.ui.actionOpen_Database.triggered.connect(lambda: self.open_database_clicked())
-        self.ui.actionAdd_Group.triggered.connect(lambda: group_widget.add_to_group(self.cur,
-                                                                                    self.ui.listWidget_groups,
-                                                                                    self.con,
-                                                                                    self))
+        self.ui.actionAdd_Group.triggered.connect(lambda: self.add_group_action())
 
-        self.ui.actionEdit_Group.triggered.\
-            connect(lambda: group_widget.edit_group(self.id_of_groups_password_entries,
-                                                    self.groups[self.id_of_groups_password_entries-1][1],
-                                                    self,
-                                                    self.cur,
-                                                    self.con))
+        self.ui.actionEdit_Group.triggered.connect(lambda: self.edit_group_action())
 
-        self.ui.actionDelete_Group.triggered.\
-            connect(lambda: group_widget.delete_group(self.groups[self.id_of_groups_password_entries-1][0],
-                                                      self.groups[self.id_of_groups_password_entries-1][1],
-                                                      self,
-                                                      self.ui.listWidget_groups,
-                                                      self.con,
-                                                      True))
+        self.ui.actionDelete_Group.triggered.connect(lambda: self.delete_group_action())
 
         self.ui.actionDark_Theme.triggered.connect(lambda: self.dark_theme_activated())
         self.ui.actionLight_Theme.triggered.connect(lambda: self.light_theme_activated())
         self.ui.actionSave_Database.triggered.connect(lambda: self.save_requested())
+
+        self.ui.actionNew_Entry.triggered.connect(lambda: self.new_entry_action())
+        self.ui.actionEdit_Entry.triggered.connect(lambda: self.edit_entry_action())
+        self.ui.actionDelete_Entry.triggered.connect(lambda: self.delete_entry_action())
 
         self.ui.tableWidget_entries.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.ui.tableWidget_entries.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
@@ -65,7 +55,6 @@ class MainWindow(QMainWindow):
         # User password that will be used to re-encrypt database (ie: save)
         self.current_password = None
 
-        #
         self.current_database = None
         self.current_selected_group = None
         self.current_selected_entry = None
@@ -92,10 +81,71 @@ class MainWindow(QMainWindow):
         except:
             pass
 
+        self.ui.statusbar.showMessage("Open or create database using top left menu.", 10000)
+
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         self.settings.setValue("Window Size", self.size())
         self.settings.setValue("Window Position", self.pos())
         print("Closed event")
+
+    def new_entry_action(self):
+        try:
+            table_widget.new_or_edit_entry(self.id_of_groups_password_entries, self.con, False)
+            self.reload_database()
+            self.ui.statusbar.showMessage("New entry complete", 10000)
+        except:
+            self.ui.statusbar.showMessage("Open or create database using top left menu.", 10000)
+
+    def edit_entry_action(self):
+        try:
+            table_widget.new_or_edit_entry(self.id_of_groups_password_entries,
+                                           self.con,
+                                           True,
+                                           self.entries,
+                                           self.current_selected_row)
+            self.reload_database()
+            self.ui.statusbar.showMessage("Edit entry complete", 1000)
+        except:
+            self.ui.statusbar.showMessage("Open or create database using top left menu.", 10000)
+
+    def delete_entry_action(self):
+        try:
+            table_widget.delete_entry(self.current_selected_row,
+                                      self.ui.tableWidget_entries.item(self.current_selected_row, 0).text(),
+                                      self.ui.tableWidget_entries.item(self.current_selected_row, 7).text(),
+                                      self,
+                                      self.con)
+            self.reload_database()
+            self.ui.statusbar.showMessage("Delete entry complete", 1000)
+        except:
+            self.ui.statusbar.showMessage("Open or create database using top left menu.", 10000)
+
+    def add_group_action(self):
+        try:
+            group_widget.add_to_group(self.cur, self.ui.listWidget_groups, self.con, self)
+        except:
+            self.ui.statusbar.showMessage("Open or create database using top left menu.", 10000)
+
+    def edit_group_action(self):
+        try:
+            group_widget.edit_group(self.id_of_groups_password_entries,
+                                    self.groups[self.id_of_groups_password_entries - 1][1],
+                                    self,
+                                    self.cur,
+                                    self.con)
+        except:
+            self.ui.statusbar.showMessage("Open or create database using top left menu.", 10000)
+
+    def delete_group_action(self):
+        try:
+            group_widget.delete_group(self.groups[self.id_of_groups_password_entries - 1][0],
+                                      self.groups[self.id_of_groups_password_entries - 1][1],
+                                      self,
+                                      self.ui.listWidget_groups,
+                                      self.con,
+                                      True)
+        except:
+            self.ui.statusbar.showMessage("Open or create database using top left menu.", 10000)
 
     def save_requested(self):
         buffer_size = 64 * 1024
@@ -268,24 +318,31 @@ class MainWindow(QMainWindow):
 
     def eventFilter(self, source, event):
         # Event filter for QTableWidget
-        if event.type() == QtCore.QEvent.MouseButtonPress:
-            success = table_widget.table_widget(source, event, self.ui.tableWidget_entries,
-                                                self, self.con, self.id_of_groups_password_entries,
-                                                self.entries, self.current_selected_row)
-            if success is True:
-                self.reload_database()
-            elif success is False:
-                print("QTableWidget event has closed.")
-            else:
-                print("No response received in eventFilter() in main.py")
+        try:
+            if event.type() == QtCore.QEvent.MouseButtonPress:
+                success = table_widget.table_widget(source, event, self.ui.tableWidget_entries,
+                                                    self, self.con, self.id_of_groups_password_entries,
+                                                    self.entries, self.current_selected_row)
+                if success is True:
+                    self.reload_database()
+                elif success is False:
+                    print("QTableWidget event has closed.")
+                else:
+                    print("No response received in eventFilter() in main.py")
+        except:
+            self.ui.statusbar.showMessage("To use the password manager please login or register at the top right corner", 10000)
 
         # Event filter for QListWidget
-        if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:
-            success = group_widget.group_widget(source, event, self.cur, self.ui.listWidget_groups, self.con, self)
-            if success is True:
-                self.reload_database()
-            else:
-                print("Something in QListWidget went wrong.")
+        try:
+            if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:
+                success = group_widget.group_widget(source, event, self.cur, self.ui.listWidget_groups, self.con, self)
+                if success is True:
+                    self.reload_database()
+                else:
+                    print("Something in QListWidget went wrong.")
+        except:
+            self.ui.statusbar.showMessage("To use the password manager please login or register at the top right corner", 10000)
+
         return super(MainWindow, self).eventFilter(source, event)
 
 

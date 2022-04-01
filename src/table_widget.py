@@ -1,8 +1,9 @@
 import datetime
 
+import pyotp
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QEventLoop
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtCore import QEventLoop, QTimer
+from PyQt5.QtWidgets import QAction, QMessageBox, QApplication
 import database
 from entry import Entry
 from prevpass import PreviousPasswords
@@ -24,7 +25,6 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
         new_entry_action = QAction("New Entry")
         edit_entry_action = QAction("Edit Entry")
         delete_entry_action = QAction("Delete Entry")
-        open_url_action = QAction("Open Website")
         open_previous_passwords = QAction("Open Previous Passwords")
 
         menu.addAction(copy_username_action)
@@ -35,21 +35,20 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
         menu.addAction(edit_entry_action)
         menu.addAction(delete_entry_action)
         menu.addSeparator()
-        menu.addAction(open_url_action)
         menu.addAction(open_previous_passwords)
 
         if index.data() is not None:
             print(index.data())
             menu_select = menu.exec(event.globalPos())
             if menu_select == copy_username_action:
-                print(main_window.ui.tableWidget_entries.item(
-                    main_window.ui.tableWidget_entries.row(main_window.item_clicked), 2).text())
+                temp_value_from_click = main_window.ui.tableWidget_entries.item(main_window.ui.tableWidget_entries.row(main_window.item_clicked), 2).text()
+                copy_item(temp_value_from_click, main_window)
             elif menu_select == copy_password_action:
-                print(main_window.ui.tableWidget_entries.item(
-                    main_window.ui.tableWidget_entries.row(main_window.item_clicked), 3).text())
+                temp_value_from_click = main_window.ui.tableWidget_entries.item(main_window.ui.tableWidget_entries.row(main_window.item_clicked), 3).text()
+                copy_item(temp_value_from_click, main_window)
             elif menu_select == copy_totp_action:
-                print(main_window.ui.tableWidget_entries.item(
-                    main_window.ui.tableWidget_entries.row(main_window.item_clicked), 6).text())
+                temp_value_from_click = main_window.ui.tableWidget_entries.item(main_window.ui.tableWidget_entries.row(main_window.item_clicked), 6).text()
+                copy_item(temp_value_from_click, main_window, True)
             elif menu_select == new_entry_action:
                 print("New entry selected")
                 new_entry_list = new_or_edit_entry(id_of_group, connection, False, entries, row)
@@ -69,8 +68,6 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
                 print(index.row())
                 print(id_of_entry.text())
                 print(group_id_of_entry.text())
-            elif menu_select == open_url_action:
-                pass
             elif menu_select == open_previous_passwords:
                 previous_passwords_window(entries, row, connection)
             else:
@@ -92,6 +89,37 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
         index = table_wid.indexAt(event.pos())
         print(index.data())
         print("Left button pressed")
+
+
+def copy_item(item, main_window, trigger=False):
+    print("Inside double clicked")
+    if trigger:
+        # TOTP code.
+        totp = pyotp.TOTP(item)
+        item = totp.now()
+    main_window.count = 30
+    clipboard = QApplication.clipboard()
+    clipboard.clear(mode=clipboard.Clipboard)
+    clipboard.setText(item, mode=clipboard.Clipboard)
+    print("Current Column: " + str(item))
+    # Timer initialisation.
+    main_window.timer = QTimer()
+
+    # Timer stops in case another timer was previously called.
+    main_window.timer.stop()
+
+    # Call functions each second.
+    main_window.timer.timeout.connect(lambda: clipboard_timer(clipboard, main_window))
+    main_window.timer.start(1000)
+
+
+def clipboard_timer(clipboard, main_window):
+    main_window.count -= 1
+    print(main_window.count)
+    if main_window.count == 0:
+        main_window.timer.stop()
+        clipboard.clear(mode=clipboard.Clipboard)
+        print("Clipboard cleared")
 
 
 def get_entry_fields(UI_entry):

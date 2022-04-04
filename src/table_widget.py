@@ -41,13 +41,16 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
             print(index.data())
             menu_select = menu.exec(event.globalPos())
             if menu_select == copy_username_action:
-                temp_value_from_click = main_window.ui.tableWidget_entries.item(main_window.ui.tableWidget_entries.row(main_window.item_clicked), 2).text()
+                temp_value_from_click = main_window.ui.tableWidget_entries.item(
+                    main_window.ui.tableWidget_entries.row(main_window.item_clicked), 2).text()
                 copy_item(temp_value_from_click, main_window)
             elif menu_select == copy_password_action:
-                temp_value_from_click = main_window.ui.tableWidget_entries.item(main_window.ui.tableWidget_entries.row(main_window.item_clicked), 3).text()
+                temp_value_from_click = main_window.ui.tableWidget_entries.item(
+                    main_window.ui.tableWidget_entries.row(main_window.item_clicked), 3).text()
                 copy_item(temp_value_from_click, main_window)
             elif menu_select == copy_totp_action:
-                temp_value_from_click = main_window.ui.tableWidget_entries.item(main_window.ui.tableWidget_entries.row(main_window.item_clicked), 6).text()
+                temp_value_from_click = main_window.ui.tableWidget_entries.item(
+                    main_window.ui.tableWidget_entries.row(main_window.item_clicked), 6).text()
                 copy_item(temp_value_from_click, main_window, True)
             elif menu_select == new_entry_action:
                 print("New entry selected")
@@ -64,10 +67,6 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
                 # Selected row group ID from database.
                 group_id_of_entry = table_wid.item(row_to_remove, 7)
                 delete_entry(index.row(), id_of_entry.text(), group_id_of_entry.text(), main_window, connection)
-                print("Delete entry")
-                print(index.row())
-                print(id_of_entry.text())
-                print(group_id_of_entry.text())
             elif menu_select == open_previous_passwords:
                 previous_passwords_window(entries, row, connection)
             else:
@@ -92,46 +91,51 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
 
 
 def copy_item(item, main_window, trigger=False):
-    print("Inside double clicked")
+    """
+    Copy selected item to clipboard.
+
+    :param item:
+    Item to be copied to clipboard.
+
+    :param main_window:
+    Main window class.
+
+    :param trigger:
+    Check if totp code
+    """
+    # Check if TOTP code requested.
     if trigger:
-        # TOTP code.
+        # Initialisation of TOTP code.
         totp = pyotp.TOTP(item)
+        # Generate time based code.
         item = totp.now()
+    # Amount of seconds content will be copied to clipboard.
     main_window.count = 30
+    # Setup and copy item to clipboard.
     clipboard = QApplication.clipboard()
     clipboard.clear(mode=clipboard.Clipboard)
     clipboard.setText(item, mode=clipboard.Clipboard)
-    print("Current Column: " + str(item))
-    # Timer initialisation.
+    # Timer initialisation, stop the timer incase a current count is in progress,
+    # and run the timer for 30 seconds.
     main_window.timer = QTimer()
-
-    # Timer stops in case another timer was previously called.
     main_window.timer.stop()
-
-    # Call functions each second.
     main_window.timer.timeout.connect(lambda: clipboard_timer(clipboard, main_window))
     main_window.timer.start(1000)
 
 
 def clipboard_timer(clipboard, main_window):
+    # Each call remove a second and display seconds to statusbar for user.
     main_window.count -= 1
-    print(main_window.count)
+    main_window.ui.statusbar.showMessage("Item copied to clipboard for " + str(main_window.count) + " seconds")
+    # Stop the timer, clear the clipboard and display a statusbar for the user about this action.
     if main_window.count == 0:
         main_window.timer.stop()
         clipboard.clear(mode=clipboard.Clipboard)
-        print("Clipboard cleared")
+        main_window.ui.statusbar.showMessage("Cleared from clipboard", 10000)
 
 
 def get_entry_fields(UI_entry):
-    print("In get entry fields")
     result = UI_entry.get_entry_fields()
-    print(result)
-    print(result[0])
-    print(result[1])
-    print(result[2])
-    print(result[3])
-    print(result[4])
-    print(result[5])
     globals()['entry_result'] = result
 
 
@@ -256,15 +260,7 @@ def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, con
 
 
 def previous_passwords_window(entries, row, connection):
-    print("table_widget: Opened previous passwords")
-    print("-----")
-    print(entries)
-    print(row)
-    print("-----")
-
     entry = entries[row]
-    print(entry[0])
-
     UI_prevpass = PreviousPasswords()
     UI_prevpass.__init__()
     UI_prevpass.set_previous_password_list(entry, connection)

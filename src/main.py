@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
         self.ui.actionDelete_Entry.triggered.connect(lambda: self.delete_entry_action())
 
         self.ui.tableWidget_entries.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+
         self.ui.tableWidget_entries.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.ui.tableWidget_entries.verticalHeader().setVisible(False)
         self.ui.tableWidget_entries.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
@@ -330,18 +331,22 @@ class MainWindow(QMainWindow):
                 else:
                     print("No response received in eventFilter() in main.py")
         except:
-            self.ui.statusbar.showMessage("To use the password manager please login or register at the top right corner", 10000)
+            self.ui.statusbar.showMessage("To use the password manager please login or register at the top "
+                                          "right corner", 10000)
 
         # Event filter for QListWidget
         try:
             if event.type() == QEvent.ContextMenu and source is self.ui.listWidget_groups:
+                # Display menu on group selected.
                 success = group_widget.group_widget(source, event, self.cur, self.ui.listWidget_groups, self.con, self)
+                # Reload database when group was updated.
                 if success is True:
                     self.reload_database()
                 else:
                     print("Something in QListWidget went wrong.")
         except:
-            self.ui.statusbar.showMessage("To use the password manager please login or register at the top right corner", 10000)
+            self.ui.statusbar.showMessage("To use the password manager please login or register at the top right "
+                                          "corner", 10000)
 
         return super(MainWindow, self).eventFilter(source, event)
 

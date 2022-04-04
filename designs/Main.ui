@@ -156,6 +156,9 @@
    <property name="text">
     <string>New Database</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="actionOpen_Database">
    <property name="icon">
@@ -165,6 +168,9 @@
    <property name="text">
     <string>Open Database</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionSave_Database">
    <property name="icon">
@@ -173,6 +179,9 @@
    </property>
    <property name="text">
     <string>Save Database</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionSave_Database_as">
@@ -201,6 +210,9 @@
    <property name="text">
     <string>About</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
   </action>
   <action name="actionAdd_Group">
    <property name="icon">
@@ -209,6 +221,9 @@
    </property>
    <property name="text">
     <string>Add Group</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A, Ctrl+G</string>
    </property>
   </action>
   <action name="actionEdit_Group">
@@ -219,6 +234,9 @@
    <property name="text">
     <string>Edit Group</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+E, Ctrl+G</string>
+   </property>
   </action>
   <action name="actionDelete_Group">
    <property name="icon">
@@ -227,6 +245,9 @@
    </property>
    <property name="text">
     <string>Delete Group</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D, Ctrl+G</string>
    </property>
   </action>
   <action name="actionNew_Entry">
@@ -237,6 +258,9 @@
    <property name="text">
     <string>New Entry</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N, Ctrl+E</string>
+   </property>
   </action>
   <action name="actionEdit_Entry">
    <property name="icon">
@@ -246,6 +270,9 @@
    <property name="text">
     <string>Edit Entry</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+E, Ctrl+E</string>
+   </property>
   </action>
   <action name="actionDelete_Entry">
    <property name="icon">
@@ -254,6 +281,9 @@
    </property>
    <property name="text">
     <string>Delete Entry</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D, Ctrl+E</string>
    </property>
   </action>
   <action name="actionOptions">
@@ -269,10 +299,16 @@
    <property name="text">
     <string>Light Theme</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+L, Ctrl+T</string>
+   </property>
   </action>
   <action name="actionDark_Theme">
    <property name="text">
     <string>Dark Theme</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D, Ctrl+T</string>
    </property>
   </action>
   <action name="actionEnglish">

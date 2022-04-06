@@ -12,16 +12,41 @@ global entry_result
 
 
 def table_widget(source, event, table_wid, main_window, connection, id_of_group, entries, row):
-    if event.button() == QtCore.Qt.RightButton:
-        print("Right Button Pressed")
-        index = table_wid.indexAt(event.pos())
-        # Display content of cell
-        print(index.data())
+    """
+    Generate a menu for password entries tables.
 
+    :param source:
+    The object being clicked on.
+
+    :param event:
+    The right click on the object.
+
+    :param table_wid:
+    QTableWidget from the main window.
+
+    :param main_window:
+    Main window class.
+
+    :param connection:
+    Database connection
+
+    :param id_of_group:
+    The id of the group the user is in.
+
+    :param entries:
+    The password entries of the group of entries.
+
+    :param row:
+    The password entry row clicked.
+    """
+    if event.button() == QtCore.Qt.RightButton:
+        index = table_wid.indexAt(event.pos())
+
+        # Initialise a right click menu.
         menu = QtWidgets.QMenu()
         copy_username_action = QAction("Copy Username")
         copy_password_action = QAction("Copy Password")
-        copy_totp_action = QAction("Copy TOTP")
+        copy_totp_action = QAction("Copy 2FA")
         new_entry_action = QAction("New Entry")
         edit_entry_action = QAction("Edit Entry")
         delete_entry_action = QAction("Delete Entry")
@@ -38,27 +63,36 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
         menu.addAction(open_previous_passwords)
 
         if index.data() is not None:
-            print(index.data())
+
             menu_select = menu.exec(event.globalPos())
+
+            # What menu item the user selects.
             if menu_select == copy_username_action:
                 temp_value_from_click = main_window.ui.tableWidget_entries.item(
                     main_window.ui.tableWidget_entries.row(main_window.item_clicked), 2).text()
+
                 copy_item(temp_value_from_click, main_window)
+
             elif menu_select == copy_password_action:
                 temp_value_from_click = main_window.ui.tableWidget_entries.item(
                     main_window.ui.tableWidget_entries.row(main_window.item_clicked), 3).text()
+
                 copy_item(temp_value_from_click, main_window)
+
             elif menu_select == copy_totp_action:
                 temp_value_from_click = main_window.ui.tableWidget_entries.item(
                     main_window.ui.tableWidget_entries.row(main_window.item_clicked), 6).text()
+
                 copy_item(temp_value_from_click, main_window, True)
+
             elif menu_select == new_entry_action:
-                print("New entry selected")
                 new_entry_list = new_or_edit_entry(id_of_group, connection, False, entries, row)
                 return new_entry_list
+
             elif menu_select == edit_entry_action:
                 edit_entry_list = new_or_edit_entry(id_of_group, connection, True, entries, row)
                 return edit_entry_list
+
             elif menu_select == delete_entry_action:
                 # Selected row to delete.
                 row_to_remove = index.row()
@@ -75,7 +109,10 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
             return True
         # User right clicks empty space.
         else:
+            # Clears the big menu above if empty space clicked.
             menu.clear()
+
+            # Since no password entry was clicked, there can only be an option to add a new entry.
             menu.addAction(new_entry_action)
             menu_select = menu.exec(event.globalPos())
 
@@ -86,8 +123,6 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
             return True
     elif event.button() == QtCore.Qt.LeftButton:
         index = table_wid.indexAt(event.pos())
-        print(index.data())
-        print("Left button pressed")
 
 
 def copy_item(item, main_window, trigger=False):
@@ -109,12 +144,15 @@ def copy_item(item, main_window, trigger=False):
         totp = pyotp.TOTP(item)
         # Generate time based code.
         item = totp.now()
+
     # Amount of seconds content will be copied to clipboard.
     main_window.count = 30
+
     # Setup and copy item to clipboard.
     clipboard = QApplication.clipboard()
     clipboard.clear(mode=clipboard.Clipboard)
     clipboard.setText(item, mode=clipboard.Clipboard)
+
     # Timer initialisation, stop the timer incase a current count is in progress,
     # and run the timer for 30 seconds.
     main_window.timer = QTimer()
@@ -124,9 +162,20 @@ def copy_item(item, main_window, trigger=False):
 
 
 def clipboard_timer(clipboard, main_window):
+    """
+    This method is called every second until the end of the timer.
+
+    :param main_window:
+    Main window class.
+
+    :param clipboard:
+    The clipboard.
+
+    """
     # Each call remove a second and display seconds to statusbar for user.
     main_window.count -= 1
     main_window.ui.statusbar.showMessage("Item copied to clipboard for " + str(main_window.count) + " seconds")
+
     # Stop the timer, clear the clipboard and display a statusbar for the user about this action.
     if main_window.count == 0:
         main_window.timer.stop()
@@ -135,21 +184,40 @@ def clipboard_timer(clipboard, main_window):
 
 
 def get_entry_fields(UI_entry):
+    """
+    Responsible for getting password entry fields from an existing database entry.
+    """
     result = UI_entry.get_entry_fields()
     globals()['entry_result'] = result
 
 
 def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=False):
     """
-    New is False
-    Edit is True
+    Add or edit a password entry.
+
+    :param id_of_group:
+    The id of the group the user is in.
+
+    :param connection:
+    Database connection.
+
+    :param new_or_edit:
+    Check if the user wants to add a new entry or edit an entry.
+
+    :param entries:
+    The password entries of that group.
+
+    :param row:
+    The specific row that was selected by the user.
     """
+    # Setup password entry window.
     UI_entry = Entry()
     UI_entry.__init__()
+    # False is if it's a new password entry.
+    # Else it is an edit entry - fill out the fields with their contents.
     if row is False:
         print("Row is false in new_or_edit_entry")
     else:
-        print("new_or_edit_entry: {}".format(entries[row]))
         entry = entries[row]
         if new_or_edit is True:
             UI_entry.ui.website_lineEdit.setText(entry[1])
@@ -160,19 +228,20 @@ def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=F
             UI_entry.ui.url_lineEdit.setText(entry[4])
             UI_entry.ui.twofa_lineEdit.setText(entry[6])
 
-    # Detect that button was clicked from here and try to pass down variables
+    # Detect that button was clicked from here and pass down variables
     UI_entry.ui.submit_button.clicked.connect(lambda: UI_entry.submitted())
     UI_entry.ui.submit_button.clicked.connect(lambda: get_entry_fields(UI_entry))
     UI_entry.show()
+
+    # Start a loop until password entry window is destroyed.
     loop = QEventLoop()
     # By default, login is hidden on close()
     # This attribute makes it destroyed.
     UI_entry.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
     UI_entry.destroyed.connect(loop.quit)
     loop.exec()
-    print("New entry window opened")
-    # print(entry_result)
-    # List is only returned if submission button is clicked and valid from New Entry Window.
+
+    # Insert fields to database.
     if new_or_edit is False:
         try:
             if entry_result[5] is False:
@@ -183,6 +252,7 @@ def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=F
                 return True
         except NameError:
             print("table_widget.py: entry_result does not exist.")
+    # Edit fields in database.
     else:
         try:
             if entry_result[5] is False:
@@ -196,13 +266,24 @@ def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=F
 
 
 def insert_entry(entry_result, id_of_group, connection):
-    print("in insert entry method with {}".format(entry_result))
-    print(entry_result[5])
+    """
+    Insert an entry into the database.
 
+    :param entry_result:
+    List of items that need to be inserted to database.
+
+    :param id_of_group:
+    The id of group to insert password entry into.
+
+    :param connection:
+    Database connection
+    """
+    # SQL query to insert password entry into database.
     sql_entry_insert = """INSERT INTO passwords( passwordWebsite, 
     passwordName, passwordPassword, passwordUrl, 
     passwordCreation, password2FA, groupId) VALUES(?,?,?,?,?,?,?)"""
 
+    # Password entry insert order, run query and commit to database.
     pass_entry_one = [entry_result[0], entry_result[1], entry_result[2],
                       entry_result[3], datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
                       entry_result[4], id_of_group]
@@ -211,33 +292,65 @@ def insert_entry(entry_result, id_of_group, connection):
 
 
 def edit_entry(entry_result, entry_id, connection, old_password):
-    print("in edit entry method with {}".format(entry_result))
+    """
+    Edit an entry in the database.
 
+    :param entry_result:
+    List of items that need to be updated to database.
+
+    :param entry_id:
+    The specific entry id that needs to be edited.
+
+    :param connection:
+    The database connection.
+
+    :param old_password:
+    The old password is used to save to the previous passwords table.
+    """
+
+    # SQL query to update password entry in database.
     sql_entry_edit = """UPDATE passwords SET passwordWebsite=(?),
     passwordName=(?), passwordPassword=(?), 
     passwordUrl=(?), password2FA=(?) 
     WHERE passwordId = (?)"""
 
+    # Password entry update order and run.
     pass_entry_one = [entry_result[0], entry_result[1], entry_result[2],
                       entry_result[3], entry_result[4], entry_id]
-
     database.database_query(connection, sql_entry_edit, pass_entry_one)
 
+    # SQL query to insert password entry into database.
     sql_prev_pass_insert = """INSERT INTO previous_passwords(prevPassword, 
     prevPasswordCreation, passwordId) VALUES(?,?,?)"""
 
+    # Password entry insert order, run and commit.
     prev_pass_entry = [old_password,
                        datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
                        entry_id]
-
     database.database_query(connection, sql_prev_pass_insert, prev_pass_entry)
-
     connection.commit()
 
 
 def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, connection):
-    print("in delete entry method with {} {} {}".format(row_to_delete, id_of_entry, group_id_of_entry))
+    """
+    Delete an entry from the database.
 
+    :param row_to_delete:
+    The specific password entry row that needs to be deleted.
+
+    :param id_of_entry:
+    The specific id of the password entry that needs to be deleted.
+
+    :param group_id_of_entry:
+    The group id of the specific password entry that needs to be deleted.
+
+    :param main_window:
+    Main window class.
+
+    :param connection:
+    Database connection.
+    """
+    # Ask users if they want to remove an entry.
     reply = QMessageBox.question(main_window, "Remove a group",
                                  "Do you really want to remove this entry?\n"
                                  "It will be moved to the Recycle Bin or deleted entirely "
@@ -246,13 +359,11 @@ def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, con
 
     # Move to recycle bin if not in it already; otherwise delete forever.
     if reply == QMessageBox.Yes and int(group_id_of_entry) != 5:
-        print("Inside move to recycle")
         sql_entry_move_to_bin = """UPDATE passwords SET groupId = 5 WHERE passwordId = (?)"""
         database.database_query(connection, sql_entry_move_to_bin, [id_of_entry])
         connection.commit()
         return True
     elif reply == QMessageBox.Yes and int(group_id_of_entry) == 5:
-        print("Inside recycle delete")
         sql_delete_entry = """DELETE FROM passwords WHERE passwordId = (?)"""
         database.database_query(connection, sql_delete_entry, [id_of_entry])
         connection.commit()
@@ -260,11 +371,30 @@ def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, con
 
 
 def previous_passwords_window(entries, row, connection):
+    """
+    Load the previous password view for a specific password entry.
+
+    :param entries:
+    The password entries of the group of entries.
+
+    :param row:
+    The specific password entry row that the user wants to get previous passwords from.
+
+    :param connection:
+    Database connection.
+    """
+    # Load the particular row of an entry.
     entry = entries[row]
+
+    # Initialise previous password view.
     UI_prevpass = PreviousPasswords()
     UI_prevpass.__init__()
+
+    # Method that loads all previous passwords associated with the entry.
     UI_prevpass.set_previous_password_list(entry, connection)
     UI_prevpass.show()
+
+    # Loop stays until close event.
     loop = QEventLoop()
     # By default, login is hidden on close()
     # This attribute makes it destroyed.

@@ -4,9 +4,13 @@ from PyQt5.QtCore import QSettings
 import file_explorer
 import error_checking
 import crypto
+import information
 
 
 class UiLogin(object):
+    """
+    UI + Functionality for the login view.
+    """
     def setup_ui_login(self, Login):
         self.login_button = QtWidgets.QPushButton(Login)
         self.quit_button = QtWidgets.QPushButton(Login)
@@ -106,6 +110,8 @@ class UiLogin(object):
                                                       self.secret_button,
                                                       self.secret_help_button,
                                                       self.secret_warning))
+
+        # Hide all the helper labels initially.
         self.secret_label.hide()
         self.secret_edit.hide()
         self.secret_button.hide()
@@ -139,6 +145,7 @@ class UiLogin(object):
             clicked.connect(lambda: error_checking.view_hide_password(self.password_view_button,
                                                                       self.password_edit))
 
+        # Runs when user submits passwords.
         self.login_button.clicked.connect(lambda: self.login())
         self.login_button.clicked.connect(lambda: self.login_close(Login))
 
@@ -148,7 +155,6 @@ class UiLogin(object):
         self.master_password = None
         self.database = None
         self.current_database_location = None
-
         self.settings = QSettings("Armour", "Armour Password Manager")
 
         try:
@@ -156,12 +162,22 @@ class UiLogin(object):
         except:
             pass
 
+        # Help buttons.
+        self.directory_help.clicked.connect(lambda: information.directory_edit_login_moment())
+        self.password_help.clicked.connect(lambda: information.password_login_help_moment())
+        self.secret_help_button.clicked.connect(lambda: information.secret_file_login_moment())
+
     def login_close(self, Login):
-        # Closes login view if success.
+        """
+        Closes login view if login was successful.
+        """
         if self.master_password is not None:
             Login.close()
 
     def login(self):
+        """
+        Attempt to login with users provided password and secret file.
+        """
         try:
             self.master_password, self.database = \
                 crypto.login(error_checking.check_fields(self.directory_edit,
@@ -180,6 +196,9 @@ class UiLogin(object):
             pass
 
     def update_if_field_nonempty(self):
+        """
+        Notify user with warning that password cannot be empty.
+        """
         if self.password_edit.text() == '':
             self.password_warning.show()
         else:

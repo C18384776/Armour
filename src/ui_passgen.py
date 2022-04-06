@@ -2,6 +2,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_PasswordGen(object):
+    """
+    UI for passgen.py
+    """
     def setupUi(self, PasswordGen):
         PasswordGen.setObjectName("PasswordGen")
         PasswordGen.resize(539, 391)

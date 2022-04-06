@@ -1,7 +1,6 @@
-import sys
-
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QEventLoop, QSettings
+import information
 from ui_entry import Ui_Entry
 import crypto
 from passgen import PassGen
@@ -9,7 +8,8 @@ from passgen import PassGen
 
 class Entry(QtWidgets.QWidget):
     """
-    New password entry window.
+    Functionality for the Password Entry view.
+    UI is in the ui_entry.py file.
     """
     def __init__(self):
         # Initialise UI.
@@ -63,6 +63,14 @@ class Entry(QtWidgets.QWidget):
         except:
             pass
 
+        # Help buttons.
+        self.ui.website_help.clicked.connect(lambda: information.entry_website_help_moment())
+        self.ui.username_help.clicked.connect(lambda: information.entry_username_help_moment())
+        self.ui.password_help.clicked.connect(lambda: information.entry_password_help_moment())
+        self.ui.strength_help.clicked.connect(lambda: information.password_strength_help_moment())
+        self.ui.url_help.clicked.connect(lambda: information.entry_url_help_moment())
+        self.ui.twofa_help.clicked.connect(lambda: information.entry_twofa_help_moment())
+
     def password_view_clicked(self):
         """
         View/hide password and repeat password on button click..
@@ -78,7 +86,6 @@ class Entry(QtWidgets.QWidget):
         """
         Open password generator and input generated password into current entry.py program.
         """
-        print("Password generator clicked")
         # Initialise and show password generator window.
         UI_passgen = PassGen()
         UI_passgen.__init__()
@@ -97,7 +104,6 @@ class Entry(QtWidgets.QWidget):
 
         :param UI_passgen:
         Class object for password generator.
-
         """
         self.ui.password_lineEdit.setText(UI_passgen.ui.password_lineEdit.text())
         self.ui.repeat_lineEdit.setText(UI_passgen.ui.password_lineEdit.text())

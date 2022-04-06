@@ -98,6 +98,7 @@ def add_to_group(cursor, list_widget, connection, main_window):
         new_group_name = [text]
         database.database_query(connection, sql_group_insert, new_group_name)
         connection.commit()
+        main_window.ui.statusbar.showMessage("Group successfully created.", 10000)
         return True
 
 
@@ -137,6 +138,7 @@ def edit_group(edit_group_location, group_to_edit, main_window, cursor, connecti
             database.database_query(connection, sql_group_update, edit_group_name)
             connection.commit()
             main_window.reload_database()
+            main_window.ui.statusbar.showMessage("Group successfully edited.", 10000)
             return True
 
 
@@ -146,12 +148,22 @@ def delete_group(delete_group_location, group_to_delete, main_window,
     Delete a group.
 
     :param delete_group_location:
+    Group row to delete.
+
     :param group_to_delete:
+    Group name that is to be deleted.
+
     :param main_window:
+    Main window class.
+
     :param list_widget:
+    QListWidget that hosts the groups in main window.
+
     :param connection:
+    Database connection.
+
     :param action_button:
-    :return:
+    A check that identifies if right click or menu bar click was performed.
     """
     # Message box asking if user really wants to delete group.
     reply = QMessageBox.question(main_window, "Remove a group",
@@ -174,4 +186,5 @@ def delete_group(delete_group_location, group_to_delete, main_window,
         delete_group_name = [group_to_delete]
         database.database_query(connection, sql_group_delete, delete_group_name)
         connection.commit()
+        main_window.ui.statusbar.showMessage("Group successfully deleted.", 10000)
         return True

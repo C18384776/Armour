@@ -116,7 +116,7 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionAbout"/>
+    <addaction name="actionManual"/>
    </widget>
    <addaction name="menuDatabase"/>
    <addaction name="menuGroups"/>
@@ -202,16 +202,16 @@
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionAbout">
+  <action name="actionManual">
    <property name="icon">
     <iconset resource="../src/resources.qrc">
      <normaloff>:/system/icons/System/question-line.svg</normaloff>:/system/icons/System/question-line.svg</iconset>
    </property>
    <property name="text">
-    <string>About</string>
+    <string>Open Manual</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+A</string>
+    <string>Ctrl+M</string>
    </property>
   </action>
   <action name="actionAdd_Group">

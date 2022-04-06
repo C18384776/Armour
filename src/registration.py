@@ -8,6 +8,9 @@ import information
 
 
 class UiRegistration(object):
+    """
+    UI + Functionality for the register view.
+    """
     def setup_ui_registration(self, Registration):
         self.password_bits_value = 0
         self.register_button = QtWidgets.QPushButton(Registration)
@@ -170,7 +173,8 @@ class UiRegistration(object):
             self.directory_edit,
             self.expert_checkBox.isChecked(),
             self.secret_edit,
-            self.password_edit))
+            self.password_edit,
+            Registration))
 
         self.password_view_button.clicked.connect(lambda: error_checking.view_hide_password(self.password_view_button,
                                                                                             self.password_edit))
@@ -183,16 +187,24 @@ class UiRegistration(object):
         self.retranslateUi(Registration)
         QtCore.QMetaObject.connectSlotsByName(Registration)
 
+        # Attempt to load previously loaded settings.
         self.settings = QSettings("Armour", "Armour Password Manager")
-
-        self.directory_help.clicked.connect(lambda: information.directory_edit_moment())
 
         try:
             Registration.setStyleSheet(self.settings.value("Theme"))
         except:
             pass
 
+        # Help buttons.
+        self.directory_help.clicked.connect(lambda: information.directory_edit_registration_moment())
+        self.password_help.clicked.connect(lambda: information.password_registration_help_moment())
+        self.strength_help_button.clicked.connect(lambda: information.password_strength_help_moment())
+        self.secret_help_button.clicked.connect(lambda: information.secret_file_registration_moment())
+
     def browse_dir(self):
+        """
+        Browse the directory to find the database save location.
+        """
         self.dir_path = QtWidgets.QFileDialog.getExistingDirectory()
         self.directory_edit.setText(self.dir_path)
 

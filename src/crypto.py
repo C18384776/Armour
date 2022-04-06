@@ -8,7 +8,7 @@ import warn
 import datetime
 
 
-def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret_edit, password_edit):
+def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret_edit, password_edit, Registration):
     """
     Create database file.
     There are three tables: 1. groups; 2. passwords; 3. previous_passwords.
@@ -31,9 +31,7 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
 
     :param password_edit:
     Password given by user to encrypt with.
-
     """
-
     # Registration begins once all required fields are entered.
     if not check_fields:
 
@@ -43,7 +41,6 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
 
             # Exit function if user does not want to continue with a weak password.
             if response_to_password_warning == 'No':
-                print("Said no")
                 return 1
 
         # Where database will be saved on PC.
@@ -88,7 +85,6 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
 
         # Create database connection.
         connection = database.make_connection(database_save_path)
-        print("connection made? {}".format(connection))
 
         # If connection is make.
         if connection is not None:
@@ -101,15 +97,15 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
 
             pass_entry_one = ['Facebook', 'Declan', 'password1',
                               'www.facebook.com', datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
-                              '123456', 1]
+                              'JBSWY3DPEHPK3PXP', 1]
 
             pass_entry_two = ['Twitter', 'Declan', 'password2',
                               'www.twitter.com', datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
-                              '123456', 1]
+                              'JBSWY3DPEHPK3PXP', 1]
 
             pass_entry_three = ['AIB', 'Declan', 'password3',
                                 'www.aib.ie', datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
-                                '123456', 2]
+                                'JBSWY3DPEHPK3PXP', 2]
 
             prev_pass_entry_one = ['previouspassword123',
                                    datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"),
@@ -145,7 +141,6 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
 
             # Close database.
             connection.close()
-            print("Database created.")
 
             # Start preparation to encrypt database by hashing password (and file if available).
             password = hash.password_hash_collection(expert_checkbox,
@@ -155,7 +150,7 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
             # Encrypt database with hashed password value from above.
             database_encryption(password, database_save_path)
 
-            print("Database encrypted")
+            Registration.close()
         else:
             print("Problem making database?")
 
@@ -186,9 +181,6 @@ def database_encryption(password, database_save_path):
 
             # Encrypt stream
             pyAesCrypt.encryptStream(plaintext, cipher, password, buffer_size)
-
-            # Print encrypted data
-            print("This is the ciphertext:\n" + str(cipher.getvalue()))
 
             file.close()
 
@@ -251,9 +243,6 @@ def login(check_fields, expert_checkbox, secret_edit, password_edit, directory_e
 
                 # Decrypt stream
                 pyAesCrypt.decryptStream(cipher, decrypted, password, buffer_size, ciphertext_length)
-
-                # Print decrypted data
-                print("Decrypted data:\n" + str(decrypted.getvalue()))
 
                 return password, decrypted.getvalue()
         except:

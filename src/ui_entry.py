@@ -2,6 +2,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_Entry(object):
+    """
+    UI for entry.py
+    """
     def setupUi(self, Entry):
         Entry.setObjectName("Entry")
         Entry.resize(470, 342)

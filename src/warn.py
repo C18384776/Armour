@@ -2,6 +2,9 @@ from PyQt5.QtWidgets import QMessageBox
 
 
 def password_warning_message():
+    """
+    Warning that gets displayed if a password is less than 100 bits.
+    """
     message = QMessageBox()
     message.setWindowTitle("Weak Password Detected")
     message.setText("""

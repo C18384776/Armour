@@ -208,10 +208,13 @@ class MainWindow(QMainWindow):
                 pyAesCrypt.encryptStream(plaintext, cipher, self.current_password, buffer_size)
 
                 file.close()
+
             # Overwrite database file with encryption.
             with open(self.current_db_location, 'wb') as file:
                 file.write(cipher.getvalue())
                 file.close()
+
+            self.ui.statusbar.showMessage("Database saved successfully.", 10000)
         except:
             print("Error occurred in method main.py save_requested()")
 

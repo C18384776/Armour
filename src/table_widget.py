@@ -86,11 +86,11 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
                 copy_item(temp_value_from_click, main_window, True)
 
             elif menu_select == new_entry_action:
-                new_entry_list = new_or_edit_entry(id_of_group, connection, False, entries, row)
+                new_entry_list = new_or_edit_entry(id_of_group, connection, False, main_window, entries, row)
                 return new_entry_list
 
             elif menu_select == edit_entry_action:
-                edit_entry_list = new_or_edit_entry(id_of_group, connection, True, entries, row)
+                edit_entry_list = new_or_edit_entry(id_of_group, connection, True, main_window, entries, row)
                 return edit_entry_list
 
             elif menu_select == delete_entry_action:
@@ -117,7 +117,7 @@ def table_widget(source, event, table_wid, main_window, connection, id_of_group,
             menu_select = menu.exec(event.globalPos())
 
             if menu_select == new_entry_action:
-                new_entry_list = new_or_edit_entry(id_of_group, connection, False, entries, row)
+                new_entry_list = new_or_edit_entry(id_of_group, connection, False, main_window, entries, row)
                 return new_entry_list
 
             return True
@@ -191,7 +191,7 @@ def get_entry_fields(UI_entry):
     globals()['entry_result'] = result
 
 
-def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=False):
+def new_or_edit_entry(id_of_group, connection, new_or_edit, main_window, entries=False, row=False):
     """
     Add or edit a password entry.
 
@@ -249,6 +249,7 @@ def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=F
             else:
                 insert_entry(entry_result, id_of_group, connection)
                 globals()['entry_result'][5] = False
+                main_window.ui.statusbar.showMessage("Password entry successfully created.", 10000)
                 return True
         except NameError:
             print("table_widget.py: entry_result does not exist.")
@@ -260,6 +261,7 @@ def new_or_edit_entry(id_of_group, connection, new_or_edit, entries=False, row=F
             else:
                 edit_entry(entry_result, entry[0], connection, old_password)
                 globals()['entry_result'][5] = False
+                main_window.ui.statusbar.showMessage("Password entry successfully edited.", 10000)
                 return True
         except NameError:
             print("table_widget.py: entry_result does not exist.")
@@ -362,11 +364,13 @@ def delete_entry(row_to_delete, id_of_entry, group_id_of_entry, main_window, con
         sql_entry_move_to_bin = """UPDATE passwords SET groupId = 5 WHERE passwordId = (?)"""
         database.database_query(connection, sql_entry_move_to_bin, [id_of_entry])
         connection.commit()
+        main_window.ui.statusbar.showMessage("Password entry successfully moved to recycle bin.", 10000)
         return True
     elif reply == QMessageBox.Yes and int(group_id_of_entry) == 5:
         sql_delete_entry = """DELETE FROM passwords WHERE passwordId = (?)"""
         database.database_query(connection, sql_delete_entry, [id_of_entry])
         connection.commit()
+        main_window.ui.statusbar.showMessage("Password entry successfully deleted.", 10000)
         return True
 
 

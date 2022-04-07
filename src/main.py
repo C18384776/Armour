@@ -216,7 +216,7 @@ class MainWindow(QMainWindow):
 
             self.ui.statusbar.showMessage("Database saved successfully.", 10000)
         except:
-            print("Error occurred in method main.py save_requested()")
+            self.ui.statusbar.showMessage("There is no database open.", 10000)
 
     def dark_theme_activated(self):
         """

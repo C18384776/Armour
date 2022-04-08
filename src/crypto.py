@@ -119,23 +119,19 @@ def sign_up(check_fields, password_bits, directory_edit, expert_checkbox, secret
             database.database_query(connection, sql_create_group_table, None)
             database.database_query(connection, sql_create_password_table, None)
             database.database_query(connection, sql_create_previous_password_table, None)
-
             # Sample database inserts into groups table.
             database.database_query(connection, sql_group_insert, group_name_sm)
             database.database_query(connection, sql_group_insert, group_name_bank)
             database.database_query(connection, sql_group_insert, group_name_school)
             database.database_query(connection, sql_group_insert, group_name_other)
             database.database_query(connection, sql_group_insert, group_name_bin)
-
             # Sample database inserts into passwords table.
             database.database_query(connection, sql_entry_insert, pass_entry_one)
             database.database_query(connection, sql_entry_insert, pass_entry_two)
             database.database_query(connection, sql_entry_insert, pass_entry_three)
-
             # Sample database inserts into previous_passwords table.
             database.database_query(connection, sql_prev_pass_insert, prev_pass_entry_one)
             database.database_query(connection, sql_prev_pass_insert, prev_pass_entry_two)
-
             # Commit changes to database.
             connection.commit()
 
@@ -246,7 +242,7 @@ def login(check_fields, expert_checkbox, secret_edit, password_edit, directory_e
 
                 return password, decrypted.getvalue()
         except:
-            print("Wrong password?")
+            print("Wrong password")
 
 
 def update_password_bits(password_edit, password_bits_value, strength_progress_bar, password_warning):
